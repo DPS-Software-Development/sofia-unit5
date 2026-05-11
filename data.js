@@ -197,7 +197,7 @@ const MATCHING_POOL = [
 const FUN_FACTS = [
   "Bath è una città dell'Inghilterra famosa per le sue terme romane! 🏛️♨️",
   "I Romani arrivarono in Britain con Giulio Cesare nel 55 a.C. ⚔️",
-  "L'imperatore Claudio conquistò davvero la Britain nel 43 d.C. 👑",
+  "L'imperatore Claudio arrivò in Britain nel 43 d.C. e fondò Londinium. 👑",
   "Londinium era il nome romano di Londra. 🏛️",
   "Nelle terme romane c'erano tre sale: hot, warm e cold. 🔥🌡️❄️",
   "Imperative = ordine. \"Be quiet!\" significa \"Stai zitto!\" 🤫",
