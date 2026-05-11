@@ -1,5 +1,5 @@
 // Unit 5 - "Bath, here we come!" - Hello World, Classe 5
-// Topic normalizzati (4): Places, Directions, Imperatives, Romans
+// Topic normalizzati (3): Places, Directions, Imperatives
 
 const TOPICS = {
   places: {
@@ -60,37 +60,18 @@ const TOPICS = {
       { en: "Stop!", it: "Fermati!", emoji: "🛑" }
     ]
   },
-  romans: {
-    title: "Romans in Britain",
-    emoji: "🏛️",
-    color: "#dc2626",
-    items: [
-      { en: "emperor", it: "imperatore", emoji: "👑" },
-      { en: "amphitheatre", it: "anfiteatro", emoji: "🎪" },
-      { en: "temple", it: "tempio", emoji: "⛩️" },
-      { en: "forum", it: "foro romano", emoji: "⚖️" },
-      { en: "tower", it: "torre", emoji: "🗼" },
-      { en: "fortresses", it: "fortezze", emoji: "🏰" },
-      { en: "street", it: "strada", emoji: "🛣️" },
-      { en: "market", it: "mercato", emoji: "🛒" },
-      { en: "museum", it: "museo", emoji: "🏛️" },
-      { en: "villa", it: "villa", emoji: "🏡" },
-      { en: "river", it: "fiume", emoji: "🌊" }
-    ]
-  },
 };
 
-// I 4 topic ufficiali per tracking/adaptive/report
-const TOPIC_KEYS = ["Places", "Directions", "Imperatives", "Romans"];
+// I 3 topic ufficiali per tracking/adaptive/report
+const TOPIC_KEYS = ["Places", "Directions", "Imperatives"];
 const TOPIC_META = {
   "Places":     { emoji: "🏙️", color: "#7c3aed" },
   "Directions": { emoji: "🧭", color: "#0ea5e9" },
-  "Imperatives":{ emoji: "📣", color: "#f59e0b" },
-  "Romans":     { emoji: "🏛️", color: "#dc2626" }
+  "Imperatives":{ emoji: "📣", color: "#f59e0b" }
 };
 
 // QUIZ: 35 items a scelta multipla (4 opzioni, 1 corretta). 100% basato su PDF Unit 5.
-// Tag valori: "Places" | "Directions" | "Imperatives" | "Romans"
+// Tag valori: "Places" | "Directions" | "Imperatives"
 const QUIZ = [
   // ----- PLACES (8) -----
   { q: "Come si dice 'biblioteca' in inglese? (p.98)", options: ["library", "museum", "theatre", "bank"], correct: 0, tag: "Places" },
@@ -117,18 +98,7 @@ const QUIZ = [
   { q: "Cosa significa 'Be quiet!'? (p.105)", options: ["Stai fermo!", "Stai zitto!", "Sii veloce!", "Vieni qui!"], correct: 1, tag: "Imperatives" },
   { q: "Come si dice 'Non andare troppo veloce!'? (p.105)", options: ["Don't go too fast!", "No go too fast!", "Not go fast!", "Don't going fast!"], correct: 0, tag: "Imperatives" },
   { q: "Quale verbo NON appare nel box degli imperativi a p.105?", options: ["go", "cross", "turn", "swim"], correct: 3, tag: "Imperatives" },
-  { q: "Quale è l'imperativo corretto davanti a un segnale di STOP? (p.105)", options: ["Go", "Stop", "Turn", "Cross"], correct: 1, tag: "Imperatives" },
-
-  // ----- ROMANS (9) - solo vocabolario inglese + reading comprehension del testo -----
-  { q: "Come si dice 'imperatore' in inglese? (vocab Romans, p.110)", options: ["museum", "emperor", "forum", "tower"], correct: 1, tag: "Romans" },
-  { q: "Cosa significa 'fortresses' in italiano? (vocab Romans, p.110)", options: ["foreste", "fortezze", "ferrovie", "fontane"], correct: 1, tag: "Romans" },
-  { q: "Come si dice 'anfiteatro' in inglese? (vocab Romans, p.111)", options: ["theatre", "museum", "amphitheatre", "temple"], correct: 2, tag: "Romans" },
-  { q: "Cosa significa 'temple' in italiano? (vocab Romans, p.111)", options: ["torre", "foro", "tempio", "mercato"], correct: 2, tag: "Romans" },
-  { q: "Come si dice 'mercato' in inglese? (vocab Romans, p.111)", options: ["forum", "tower", "market", "street"], correct: 2, tag: "Romans" },
-  { q: "Cosa significa 'tower' in italiano? (vocab Romans, p.111)", options: ["tempio", "foro", "strada", "torre"], correct: 3, tag: "Romans" },
-  { q: "Come si dice 'strada' in inglese? (vocab Romans, p.111)", options: ["market", "forum", "street", "tower"], correct: 2, tag: "Romans" },
-  { q: "Cosa significa 'bridge' in italiano? (p.110 'build a bridge')", options: ["porta", "ponte", "strada", "torre"], correct: 1, tag: "Romans" },
-  { q: "Come si dice 'esercito' in inglese? (p.110 'Claudius' army')", options: ["emperor", "animal", "army", "family"], correct: 2, tag: "Romans" }
+  { q: "Quale è l'imperativo corretto davanti a un segnale di STOP? (p.105)", options: ["Go", "Stop", "Turn", "Cross"], correct: 1, tag: "Imperatives" }
 ];
 
 // FILL THE GAP: 25 frasi del libro con buco. 100% basato su PDF Unit 5.
@@ -152,43 +122,32 @@ const FILL_GAP = [
   { sentence: "___ quiet! (p.105)", choices: ["Be", "Do", "Are"], correct: 0, topic: "Imperatives" },
   { sentence: "___ go too fast! (p.105)", choices: ["Not", "Don't", "No"], correct: 1, topic: "Imperatives" },
   { sentence: "___ the door, please. (p.105)", choices: ["Open", "Opens", "Opening"], correct: 0, topic: "Imperatives" },
-  { sentence: "Don't ___ the animals. (p.105)", choices: ["food", "feed", "feet"], correct: 1, topic: "Imperatives" },
-
-  // ----- ROMANS (6) - reading comprehension del testo + vocabolario -----
-  { sentence: "Read p.110: 'They start to build roads, ___ and villas.'", choices: ["fortresses", "museums", "temples"], correct: 0, topic: "Romans" },
-  { sentence: "Read p.111: 'Today there are still many Roman ___ hidden around the city.'", choices: ["sites", "ships", "songs"], correct: 0, topic: "Romans" },
-  { sentence: "Read p.111: 'Pretend you are at the tourist ___ office.'", choices: ["museum", "information", "shopping"], correct: 1, topic: "Romans" },
-  { sentence: "Read p.111: 'Roman ___ and Forum (city hall + market place).'", choices: ["Basilica", "Tower", "Temple"], correct: 0, topic: "Romans" },
-  { sentence: "Read p.111: 'Roman objects are ___ here.' (Museum of London)", choices: ["sold", "displayed", "lost"], correct: 1, topic: "Romans" },
-  { sentence: "Read p.111: 'The remains of the largest ___ in Britain lie here.'", choices: ["museum", "temple", "amphitheatre"], correct: 2, topic: "Romans" }
+  { sentence: "Don't ___ the animals. (p.105)", choices: ["food", "feed", "feet"], correct: 1, topic: "Imperatives" }
 ];
 
 // TRUE_FALSE: 20 affermazioni vero/falso. 100% basato su PDF Unit 5.
 const TRUE_FALSE = [
   // ----- PLACES (4) -----
-  { s: "Bath è nel sud dell'Inghilterra. (p.98)", correct: true, tag: "Places" },
-  { s: "La parola inglese 'park' significa 'parco'. (p.101)", correct: true, tag: "Places" },
-  { s: "'Library' significa 'libreria' (negozio di libri). (p.98 - significa biblioteca)", correct: false, tag: "Places" },
-  { s: "'Post office' significa 'ufficio postale'. (p.98)", correct: true, tag: "Places" },
+  { s: "Bath è nel sud dell'Inghilterra.", correct: true, tag: "Places" },
+  { s: "La parola inglese 'park' significa 'parco'.", correct: true, tag: "Places" },
+  { s: "La parola inglese 'library' significa 'libreria' (il negozio di libri).", correct: false, tag: "Places" },
+  { s: "La parola inglese 'post office' significa 'ufficio postale'.", correct: true, tag: "Places" },
+  { s: "'Hospital' in italiano significa 'ostello'.", correct: false, tag: "Places" },
+  { s: "'Bus stop' in italiano significa 'fermata dell'autobus'.", correct: true, tag: "Places" },
 
   // ----- DIRECTIONS (4) -----
-  { s: "'Turn right' significa 'gira a destra'. (p.103)", correct: true, tag: "Directions" },
-  { s: "'Go straight on' significa 'gira a sinistra'. (p.103 - significa vai dritto)", correct: false, tag: "Directions" },
-  { s: "'At the roundabout' significa 'alla rotonda'. (p.103)", correct: true, tag: "Directions" },
-  { s: "'Cross the road' significa 'gira a destra'. (p.103 - significa attraversa la strada)", correct: false, tag: "Directions" },
+  { s: "'Turn right' significa 'gira a destra'.", correct: true, tag: "Directions" },
+  { s: "'Go straight on' significa 'gira a sinistra'.", correct: false, tag: "Directions" },
+  { s: "'At the roundabout' significa 'alla rotonda'.", correct: true, tag: "Directions" },
+  { s: "'Cross the road' significa 'gira a destra'.", correct: false, tag: "Directions" },
+  { s: "'Traffic lights' significa 'semaforo'.", correct: true, tag: "Directions" },
+  { s: "'In front of' significa 'dietro a'.", correct: false, tag: "Directions" },
 
   // ----- IMPERATIVES (4) -----
-  { s: "'Be quiet!' è una forma affermativa dell'imperativo. (p.105)", correct: true, tag: "Imperatives" },
-  { s: "L'imperativo negativo si forma con 'Don't + verbo'. (p.105)", correct: true, tag: "Imperatives" },
-  { s: "'Don't open the window!' è una forma affermativa. (p.105 - è negativa)", correct: false, tag: "Imperatives" },
-  { s: "Il verbo 'feed' appare nel box degli imperativi di p.105.", correct: true, tag: "Imperatives" },
-
-  // ----- ROMANS (5) - vocabolario inglese + reading -----
-  { s: "La parola inglese 'emperor' significa 'imperatore'. (p.110)", correct: true, tag: "Romans" },
-  { s: "La parola inglese 'temple' significa 'torre'. (p.111 - significa tempio)", correct: false, tag: "Romans" },
-  { s: "La parola inglese 'amphitheatre' significa 'anfiteatro'. (p.111)", correct: true, tag: "Romans" },
-  { s: "La parola inglese 'army' significa 'esercito'. (p.110)", correct: true, tag: "Romans" },
-  { s: "La parola inglese 'fortresses' significa 'foreste'. (p.110 - significa fortezze)", correct: false, tag: "Romans" }
+  { s: "'Be quiet!' è una forma affermativa dell'imperativo.", correct: true, tag: "Imperatives" },
+  { s: "L'imperativo negativo si forma con 'Don't' davanti al verbo.", correct: true, tag: "Imperatives" },
+  { s: "'Don't open the window!' è una forma affermativa.", correct: false, tag: "Imperatives" },
+  { s: "'Open the door, please' è un imperativo negativo.", correct: false, tag: "Imperatives" }
 ];
 
 // SEQUENCE: 10 items da riordinare. items[] è l'ordine corretto, la UI mescola.
@@ -212,30 +171,29 @@ const SEQUENCE = [
     tag: "Directions"
   },
 
-  // ----- ROMANS (3) - reading order, no historical chronology -----
+  // ----- DIRECTIONS / PLACES extra (3) -----
   {
-    prompt: "Metti in ordine le frasi dell'esempio di indicazioni p.111:",
-    items: ["Excuse me, how can I get to the Temple of Mithras?", "Go straight on,", "then turn left", "on Victoria street."],
-    tag: "Romans"
+    prompt: "Metti in ordine i passi delle indicazioni: 'Excuse me, how can I get to the museum? Go straight on, turn left, the museum is on your right.'",
+    items: ["Excuse me, how can I get to the museum?", "Go straight on.", "Turn left.", "The museum is on your right."],
+    tag: "Directions"
   },
   {
-    prompt: "Metti in ordine i verbi del testo p.110 (cosa fanno i Romani in Britain):",
-    items: ["arrive in Britain", "build roads and fortresses", "stay in Britain", "found many towns"],
-    tag: "Romans"
+    prompt: "Metti in ordine le parti di un'istruzione completa con i tre passi base:",
+    items: ["Go straight on.", "Turn left at the traffic lights.", "Cross the road.", "Stop in front of the school."],
+    tag: "Directions"
   },
   {
-    prompt: "Metti in ordine le parole del box 'Walking around Londinium' p.111:",
-    items: ["Amphitheatre", "street", "market", "Temple"],
-    tag: "Romans"
-  },
-
+    prompt: "Metti in ordine i 4 luoghi della città in ordine alfabetico inglese:",
+    items: ["bank", "library", "museum", "theatre"],
+    tag: "Places"
+  }
 ];
 
-// MATCHING: pool da cui peschiamo 6 coppie random
+// MATCHING: pool da cui peschiamo 6 coppie random (solo dai 3 topic attivi)
 const MATCHING_POOL = [
   ...TOPICS.places.items,
-  ...TOPICS.directions.items.slice(0, 8),
-  ...TOPICS.romans.items.slice(0, 6)
+  ...TOPICS.directions.items,
+  ...TOPICS.imperatives.items.slice(0, 5)
 ];
 
 const FUN_FACTS = [
