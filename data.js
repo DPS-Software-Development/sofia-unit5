@@ -202,5 +202,5 @@ const FUN_FACTS = [
   "Nelle terme romane c'erano tre sale: hot, warm e cold. 🔥🌡️❄️",
   "Imperative = ordine. \"Be quiet!\" significa \"Stai zitto!\" 🤫",
   "\"Opposite\" significa \"di fronte a\", non \"opposto\" come potresti pensare! 🔄",
-  "I Romani costruirono molte strade lastricate ancora visibili oggi! 🛣️"
+  "In Britain i Romani costruirono roads, fortresses, villas e thermal baths! 🛣️🏰"
 ];

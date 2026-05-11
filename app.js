@@ -3,7 +3,7 @@
 // Multi-utente: ogni nome ha le sue stats/stelle isolate (localStorage namespaceato)
 
 const app = document.getElementById('app');
-const APP_VERSION = 'v13';
+const APP_VERSION = 'v14';
 
 // ===== Multi-user =====
 function sanitizeName(s) {
