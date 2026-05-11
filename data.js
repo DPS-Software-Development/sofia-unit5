@@ -74,8 +74,8 @@ const TOPICS = {
       { en: "street", it: "strada", emoji: "🛣️" },
       { en: "market", it: "mercato", emoji: "🛒" },
       { en: "museum", it: "museo", emoji: "🏛️" },
-      { en: "BC = Before Christ", it: "a.C. = avanti Cristo", emoji: "⏪" },
-      { en: "AD = Anno Domini", it: "d.C. = dopo Cristo", emoji: "⏩" }
+      { en: "villa", it: "villa", emoji: "🏡" },
+      { en: "river", it: "fiume", emoji: "🌊" }
     ]
   },
   baths: {
@@ -140,15 +140,15 @@ const QUIZ = [
   { q: "Come si dice 'mercato' in inglese? (vocab Romans, p.111)", options: ["forum", "tower", "market", "street"], correct: 2, tag: "Romans" },
   { q: "Cosa significa 'tower' in italiano? (vocab Romans, p.111)", options: ["tempio", "foro", "strada", "torre"], correct: 3, tag: "Romans" },
   { q: "Come si dice 'strada' in inglese? (vocab Romans, p.111)", options: ["market", "forum", "street", "tower"], correct: 2, tag: "Romans" },
-  { q: "What does 'BC' mean in English? (p.110)", options: ["Before Christ", "British Calendar", "Big Century", "Before Caesar"], correct: 0, tag: "Romans" },
-  { q: "What does 'AD' mean in English? (p.110)", options: ["After Death", "Anno Domini", "Ancient Days", "After Day"], correct: 1, tag: "Romans" },
+  { q: "Cosa significa 'bridge' in italiano? (p.110 'build a bridge')", options: ["porta", "ponte", "strada", "torre"], correct: 1, tag: "Romans" },
+  { q: "Come si dice 'esercito' in inglese? (p.110 'Claudius' army')", options: ["emperor", "animal", "army", "family"], correct: 2, tag: "Romans" },
 
   // ----- BATHS (5) -----
   { q: "Come si dice 'spogliatoi' in inglese? (p.108)", options: ["hot room", "warm room", "changing rooms", "cold room"], correct: 2, tag: "Baths" },
   { q: "Qual è la prima sala dopo gli spogliatoi nelle terme romane? (p.109)", options: ["cold room", "hot room", "warm room", "changing rooms"], correct: 1, tag: "Baths" },
   { q: "Quale è l'ultima sala visitata nelle terme romane? (p.109)", options: ["hot room", "warm room", "cold room", "changing rooms"], correct: 2, tag: "Baths" },
   { q: "Cosa significa 'warm room'? (p.109)", options: ["sala calda", "sala tiepida", "sala fredda", "spogliatoi"], correct: 1, tag: "Baths" },
-  { q: "In quale città ambientata in tempo romano si svolge la storia delle terme? (p.108)", options: ["London", "York", "Bath", "Manchester"], correct: 2, tag: "Baths" }
+  { q: "Cosa significa 'changing rooms' in italiano? (p.108)", options: ["cucina", "spogliatoi", "biblioteca", "giardino"], correct: 1, tag: "Baths" }
 ];
 
 // FILL THE GAP: 25 frasi del libro con buco. 100% basato su PDF Unit 5.
@@ -250,8 +250,8 @@ const SEQUENCE = [
     tag: "Romans"
   },
   {
-    prompt: "Metti in ordine le frasi del testo 'Roads to Rome' (p.110, come scritte nel libro):",
-    items: ["The name Britain comes from Britannia.", "The Romans arrive in Britain in 55 BC.", "They build roads, fortresses, villas and thermal baths.", "They stay for almost 400 years."],
+    prompt: "Metti in ordine i verbi del testo p.110 (cosa fanno i Romani in Britain):",
+    items: ["arrive in Britain", "build roads and fortresses", "stay in Britain", "found many towns"],
     tag: "Romans"
   },
   {
@@ -267,8 +267,8 @@ const SEQUENCE = [
     tag: "Baths"
   },
   {
-    prompt: "Metti in ordine le frasi all'arrivo alle terme (p.108):",
-    items: ["Where are we?", "In the town of Bath, in Ancient Roman times!", "Look! They're going into the baths.", "Welcome! Please go to the changing rooms."],
+    prompt: "Metti in ordine le sale che le bambine visitano alle terme (p.108-109):",
+    items: ["Welcome! Please go to the changing rooms.", "I'm melting, it's so hot!", "The water is warm. I like it!", "Brr... it's so cold!"],
     tag: "Baths"
   },
   {
@@ -291,12 +291,12 @@ const MATCHING_POOL = [
 ];
 
 const FUN_FACTS = [
-  "Bath è una città dell'Inghilterra famosa per le sue terme romane! 🏛️♨️",
-  "I Romani arrivarono in Britain con Giulio Cesare nel 55 a.C. ⚔️",
-  "L'imperatore Claudio arrivò in Britain nel 43 d.C. e fondò Londinium. 👑",
-  "Londinium era il nome romano di Londra. 🏛️",
-  "Nelle terme romane c'erano tre sale: hot, warm e cold. 🔥🌡️❄️",
+  "'Library' in inglese significa 'biblioteca'. Attenzione: NON 'libreria'! Si dice 'bookshop'. 📚",
+  "Per chiedere indicazioni si usa: 'Excuse me, how can I get to...?' 🧭",
+  "L'imperativo negativo in inglese si forma con 'Don't + verbo': 'Don't open the window!' 🚫",
+  "'Turn left' = gira a sinistra · 'Turn right' = gira a destra · 'Go straight on' = vai dritto. 🔄",
+  "Nelle terme romane le sale si dicono: hot room, warm room, cold room. 🔥🌡️❄️",
   "Imperative = ordine. \"Be quiet!\" significa \"Stai zitto!\" 🤫",
   "\"Opposite\" significa \"di fronte a\", non \"opposto\" come potresti pensare! 🔄",
-  "In Britain i Romani costruirono roads, fortresses, villas e thermal baths! 🛣️🏰"
+  "'Cross the road' significa 'attraversa la strada'. È un imperativo affermativo. 🚶"
 ];

@@ -1,7 +1,7 @@
 // Network-first cache for Sofia's English app
 // Strategy: bypass anche HTTP cache del browser (cache:'no-store') così quiz/data
 // freschi appena online. Fallback su cache SW solo se offline.
-const CACHE = 'sofia-u5-v16';
+const CACHE = 'sofia-u5-v17';
 const ASSETS = ['./', 'index.html', 'style.css', 'app.js', 'data.js', 'manifest.json', 'icon.svg'];
 
 self.addEventListener('install', e => {
