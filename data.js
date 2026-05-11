@@ -134,7 +134,31 @@ const QUIZ = [
   { q: "Hadrian's Wall was built in...", options: ["55 BC", "122 AD", "1066 AD", "476 AD"], correct: 1, tag: "Romans" },
 
   // Baths (1)
-  { q: "Qual è l'ordine delle sale alle terme romane?", options: ["hot → cool → warm", "cool → warm → hot", "warm → hot → cool", "hot → warm → cool"], correct: 2, tag: "Baths" }
+  { q: "Qual è l'ordine delle sale alle terme romane?", options: ["hot → cool → warm", "cool → warm → hot", "warm → hot → cool", "hot → warm → cool"], correct: 2, tag: "Baths" },
+
+  // ===== Aggiunte v3: 15 domande extra =====
+  // Romans (8)
+  { q: "What did the Romans build across Britain to connect their towns?", options: ["Castles", "Roads", "Cathedrals", "Bridges only"], correct: 1, tag: "Romans" },
+  { q: "Which modern city was called 'Eboracum' by the Romans?", options: ["Manchester", "Bath", "York", "Chester"], correct: 2, tag: "Romans" },
+  { q: "What was the Roman name for Manchester?", options: ["Mancunium", "Mamucium", "Manucia", "Mancastrum"], correct: 1, tag: "Romans" },
+  { q: "What does 'AD' stand for in dates like AD 122?", options: ["After Death", "Anno Domini", "Ancient Days", "All Date"], correct: 1, tag: "Romans" },
+  { q: "Why did the Romans build fortifications around their settlements?", options: ["For decoration", "To attract tourists", "For protection", "To store water"], correct: 2, tag: "Romans" },
+  { q: "In Londinium, where could Romans watch gladiator fights?", options: ["At the Forum", "At the Amphitheatre", "At the Basilica", "At the Mithraeum"], correct: 1, tag: "Romans" },
+  { q: "What was the Mithraeum in Roman London?", options: ["A market", "A bath", "A temple", "A theatre"], correct: 2, tag: "Romans" },
+  { q: "Which river runs through London, also in Roman times?", options: ["The Severn", "The Walbrook", "The Thames", "The Avon"], correct: 2, tag: "Romans" },
+
+  // Baths (2)
+  { q: "In the Roman baths story, where do people go FIRST?", options: ["The cool room", "The changing room", "The warm room", "The hot room"], correct: 1, tag: "Baths" },
+  { q: "What do people do in the cool room of the Roman baths?", options: ["Sweat a lot", "Relax and chat", "Take a final swim", "Get a massage"], correct: 2, tag: "Baths" },
+
+  // Directions (3)
+  { q: "In the dialogue 'The library is ___ the bank', which word fits?", options: ["between", "opposite", "behind", "under"], correct: 1, tag: "Directions" },
+  { q: "Which traffic feature has cars going in a circle?", options: ["Traffic lights", "Crossroads", "Roundabout", "Pavement"], correct: 2, tag: "Directions" },
+  { q: "If you are cycling, what should you wear on your head?", options: ["A hat", "A scarf", "A helmet", "Sunglasses"], correct: 2, tag: "Directions" },
+
+  // Imperatives (2)
+  { q: "What's the imperative form for a 'no parking' sign?", options: ["Don't stop", "Don't park", "Don't turn", "Don't go"], correct: 1, tag: "Imperatives" },
+  { q: "Which negative imperative tells you not to give food to animals at the zoo?", options: ["Don't touch the animals", "Don't feed the animals", "Don't cross the animals", "Don't stop the animals"], correct: 1, tag: "Imperatives" }
 ];
 
 // FILL THE GAP: topic ora allineato a TOPIC_KEYS (5 categorie)
@@ -152,7 +176,17 @@ const FILL_GAP = [
   // Places aggiunti per copertura
   { sentence: "I want to buy bread. Let's go to the ___.", choices: ["supermarket", "library", "hospital"], correct: 0, topic: "Places" },
   { sentence: "I'm ill — I need to go to the ___.", choices: ["theatre", "museum", "hospital"], correct: 2, topic: "Places" },
-  { sentence: "I want to see a play tonight at the ___.", choices: ["theatre", "bank", "park"], correct: 0, topic: "Places" }
+  { sentence: "I want to see a play tonight at the ___.", choices: ["theatre", "bank", "park"], correct: 0, topic: "Places" },
+
+  // ===== Aggiunte v3: 8 frasi extra =====
+  { sentence: "Excuse me, how ___ I get to the museum?", choices: ["can", "do", "am"], correct: 0, topic: "Directions" },
+  { sentence: "Pass ___ the chemist's and turn left.", choices: ["on", "by", "at"], correct: 1, topic: "Directions" },
+  { sentence: "At the traffic lights, ___ straight on.", choices: ["go", "going", "goes"], correct: 0, topic: "Directions" },
+  { sentence: "In ___ 43 the Emperor Claudius came to Britain.", choices: ["BC", "AD", "AC"], correct: 1, topic: "Romans" },
+  { sentence: "The Romans came to Britain to ___ many towns.", choices: ["destroy", "build", "buy"], correct: 1, topic: "Romans" },
+  { sentence: "In the hot room of the baths, people ___ a lot.", choices: ["swim", "sweat", "sleep"], correct: 1, topic: "Baths" },
+  { sentence: "___ open the door, please!", choices: ["Don't", "No", "Not"], correct: 0, topic: "Imperatives" },
+  { sentence: "Walk on the ___, not on the road.", choices: ["pavement", "roundabout", "crossroads"], correct: 0, topic: "Directions" }
 ];
 
 // MATCHING: pool da cui peschiamo 6 coppie random

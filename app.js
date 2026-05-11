@@ -4,9 +4,30 @@
 const app = document.getElementById('app');
 
 // ===== State =====
+function loadStats() {
+  try {
+    const raw = localStorage.getItem('sofia_u5_stats');
+    if (!raw) return { attempts: [], v: 2 };
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.attempts)) return { attempts: [], v: 2 };
+    return parsed;
+  } catch {
+    return { attempts: [], v: 2 };
+  }
+}
+
+let _pendingTimeout = null;
+function scheduleNext(fn, ms) {
+  if (_pendingTimeout) clearTimeout(_pendingTimeout);
+  _pendingTimeout = setTimeout(() => { _pendingTimeout = null; fn(); }, ms);
+}
+function cancelPending() {
+  if (_pendingTimeout) { clearTimeout(_pendingTimeout); _pendingTimeout = null; }
+}
+
 const state = {
   stars: parseInt(localStorage.getItem('sofia_u5_stars') || '0', 10),
-  stats: JSON.parse(localStorage.getItem('sofia_u5_stats') || '{"attempts":[],"v":2}'),
+  stats: loadStats(),
   funFact: FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)],
 };
 
@@ -83,7 +104,8 @@ function getErrorItems() {
 
 function adaptivePick(items, count, topicKey = 'tag') {
   // 60% dai topic deboli, 40% random. Se non ci sono topic deboli, tutto random.
-  const tagged = items.map((item, idx) => ({ ...item, _idx: idx }));
+  // Preserva _idx esistente se già presente (es. items che arrivano da getErrorItems).
+  const tagged = items.map((item, idx) => ({ ...item, _idx: item._idx ?? idx }));
   const weak = getWeakTopics();
   if (weak.length === 0 || tagged.length <= count) {
     return shuffle(tagged).slice(0, count);
@@ -123,6 +145,7 @@ function speak(text) {
 }
 
 function toast(msg, ms = 1500) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
   const el = document.createElement('div');
   el.className = 'toast';
   el.textContent = msg;
@@ -138,6 +161,7 @@ function escape(s) {
 
 // ===== Screen: Home =====
 function renderHome() {
+  cancelPending();
   const errors = getErrorItems();
   const totErrors = errors.quiz.length + errors.fill.length;
   const totAttempts = state.stats.attempts.length;
@@ -202,9 +226,11 @@ function renderHome() {
 const flashState = { topic: 'places', idx: 0, flipped: false };
 
 function renderFlashcards() {
+  cancelPending();
+  if (!TOPICS[flashState.topic]) flashState.topic = Object.keys(TOPICS)[0];
   const topicKey = flashState.topic;
   const topic = TOPICS[topicKey];
-  const item = topic.items[flashState.idx];
+  const item = topic.items[flashState.idx] || topic.items[0];
   const total = topic.items.length;
 
   const tabs = Object.entries(TOPICS).map(([k, t]) =>
@@ -213,7 +239,7 @@ function renderFlashcards() {
 
   app.innerHTML = `
     <div class="header">
-      <button class="back-btn" id="back">←</button>
+      <button class="back-btn" id="back" aria-label="Torna alla home">←</button>
       <div>
         <h1>🎴 Flashcards</h1>
         <div class="sub">Tocca la carta per girarla</div>
@@ -223,12 +249,13 @@ function renderFlashcards() {
     <div class="flashcard-wrap">
       <div class="flashcard ${flashState.flipped ? 'flipped' : ''}" id="card">
         <div class="face front">
-          <button class="speak-btn" id="speak">🔊</button>
+          <button class="speak-btn" id="speak" aria-label="Ascolta pronuncia inglese">🔊</button>
           <div class="big-emoji">${item.emoji}</div>
           <div class="word">${escape(item.en)}</div>
           <div class="hint">tocca per la traduzione</div>
         </div>
         <div class="face back">
+          <button class="speak-btn" id="speakBack" aria-label="Ascolta pronuncia inglese">🔊</button>
           <div class="big-emoji">${item.emoji}</div>
           <div class="it">${escape(item.it)}</div>
           <div class="hint">${escape(item.en)}</div>
@@ -236,22 +263,20 @@ function renderFlashcards() {
       </div>
     </div>
     <div class="nav-row">
-      <button class="nav-btn" id="prev" ${flashState.idx === 0 ? 'disabled' : ''}>◀</button>
+      <button class="nav-btn" id="prev" aria-label="Precedente" ${flashState.idx === 0 ? 'disabled' : ''}>◀</button>
       <div class="counter">${flashState.idx + 1} / ${total}</div>
-      <button class="nav-btn" id="next" ${flashState.idx === total - 1 ? 'disabled' : ''}>▶</button>
+      <button class="nav-btn" id="next" aria-label="Successivo" ${flashState.idx === total - 1 ? 'disabled' : ''}>▶</button>
     </div>
   `;
 
   document.getElementById('back').onclick = renderHome;
   document.getElementById('card').onclick = (e) => {
-    if (e.target.id === 'speak') return;
+    if (e.target.closest('#speak') || e.target.closest('#speakBack')) return;
     flashState.flipped = !flashState.flipped;
     document.getElementById('card').classList.toggle('flipped');
   };
-  document.getElementById('speak').onclick = (e) => {
-    e.stopPropagation();
-    speak(item.en);
-  };
+  document.getElementById('speak').onclick = (e) => { e.stopPropagation(); speak(item.en); };
+  document.getElementById('speakBack').onclick = (e) => { e.stopPropagation(); speak(item.en); };
   document.getElementById('prev').onclick = () => {
     if (flashState.idx > 0) { flashState.idx--; flashState.flipped = false; renderFlashcards(); }
   };
@@ -273,6 +298,7 @@ function renderFlashcards() {
 const quizState = { questions: [], idx: 0, score: 0, locked: false, mode: 'adaptive' };
 
 function renderQuiz(mode = 'adaptive', sourceItems = null) {
+  cancelPending();
   quizState.mode = mode;
   if (sourceItems) {
     quizState.questions = shuffle(sourceItems);
@@ -294,7 +320,7 @@ function showQuizQuestion() {
 
   app.innerHTML = `
     <div class="header">
-      <button class="back-btn" id="back">←</button>
+      <button class="back-btn" id="back" aria-label="Torna alla home">←</button>
       <div>
         <h1>❓ Quiz ${quizState.mode === 'errors' ? '· 🔁' : ''}</h1>
         <div class="sub">Domanda ${quizState.idx + 1} di ${total} — score: ${quizState.score}</div>
@@ -302,7 +328,7 @@ function showQuizQuestion() {
     </div>
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
     <div class="question-card">
-      <button class="speak-btn-sm" id="speakq">🔊</button>
+      <button class="speak-btn-sm" id="speakq" aria-label="Ascolta la domanda in inglese">🔊</button>
       <div class="tag">${escape(q.tag)} ${weakBadge}</div>
       <div class="q">${escape(q.q)}</div>
     </div>
@@ -327,7 +353,7 @@ function showQuizQuestion() {
         else if (i === choice && !ok) b.classList.add('wrong');
       });
       if (ok) quizState.score++;
-      setTimeout(() => {
+      scheduleNext(() => {
         quizState.idx++;
         quizState.locked = false;
         showQuizQuestion();
@@ -382,6 +408,7 @@ function renderQuizEnd() {
 const matchState = { pairs: [], selected: null, matched: 0, total: 0 };
 
 function renderMatching() {
+  cancelPending();
   const pool = shuffle(MATCHING_POOL).slice(0, 6);
   const items = [];
   pool.forEach((p, i) => {
@@ -398,7 +425,7 @@ function renderMatching() {
 function drawMatching() {
   app.innerHTML = `
     <div class="header">
-      <button class="back-btn" id="back">←</button>
+      <button class="back-btn" id="back" aria-label="Torna alla home">←</button>
       <div>
         <h1>🧩 Matching</h1>
         <div class="sub">Tocca una parola e poi l'immagine giusta — ${matchState.matched}/${matchState.total}</div>
@@ -479,6 +506,7 @@ function renderMatchingEnd() {
 const fillState = { items: [], idx: 0, picked: null, score: 0, locked: false, mode: 'adaptive' };
 
 function renderFillGap(mode = 'adaptive', sourceItems = null) {
+  cancelPending();
   fillState.mode = mode;
   if (sourceItems) {
     fillState.items = shuffle(sourceItems);
@@ -501,7 +529,7 @@ function showFillItem() {
   );
   app.innerHTML = `
     <div class="header">
-      <button class="back-btn" id="back">←</button>
+      <button class="back-btn" id="back" aria-label="Torna alla home">←</button>
       <div>
         <h1>✍️ Fill the gap ${fillState.mode === 'errors' ? '· 🔁' : ''}</h1>
         <div class="sub">Frase ${fillState.idx + 1} di ${total} · ${escape(f.topic)}</div>
@@ -509,7 +537,7 @@ function showFillItem() {
     </div>
     <div class="progress-bar"><div style="width:${(fillState.idx / total) * 100}%"></div></div>
     <div class="fill-sentence">
-      <button class="speak-btn-sm" id="speakf">🔊</button>
+      <button class="speak-btn-sm" id="speakf" aria-label="Ascolta la frase in inglese">🔊</button>
       ${sentenceHtml}
     </div>
     <div class="fill-choices" id="choices">
@@ -546,7 +574,7 @@ function showFillItem() {
       blank.style.borderColor = 'var(--danger)';
       toast(`No, era: ${f.choices[f.correct]}`, 1500);
     }
-    setTimeout(() => {
+    scheduleNext(() => {
       fillState.idx++;
       fillState.picked = null;
       fillState.locked = false;
@@ -595,11 +623,12 @@ function renderFillEnd() {
 
 // ===== Screen: Ripassa errori =====
 function renderRipasso() {
+  cancelPending();
   const err = getErrorItems();
   const total = err.quiz.length + err.fill.length;
   app.innerHTML = `
     <div class="header">
-      <button class="back-btn" id="back">←</button>
+      <button class="back-btn" id="back" aria-label="Torna alla home">←</button>
       <div>
         <h1>🔁 Ripassa errori</h1>
         <div class="sub">Solo le cose che hai sbagliato di recente</div>
@@ -631,6 +660,7 @@ function renderRipasso() {
 
 // ===== Screen: Report =====
 function renderReport() {
+  cancelPending();
   const topicStats = getTopicStats();
   const attempts = state.stats.attempts;
   const totAtt = attempts.length;
@@ -676,7 +706,7 @@ function renderReport() {
 
   app.innerHTML = `
     <div class="header">
-      <button class="back-btn" id="back">←</button>
+      <button class="back-btn" id="back" aria-label="Torna alla home">←</button>
       <div>
         <h1>📊 Report</h1>
         <div class="sub">${totAtt} risposte totali · ${totPct}% giuste · ${masteredCount} padroneggiate</div>
