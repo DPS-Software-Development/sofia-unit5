@@ -1,11 +1,11 @@
 // Network-first cache for Sofia's English app
-// Strategy: prova rete prima (per avere sempre l'ultima versione di quiz/contenuti),
-// cache come fallback offline. Garantisce che fix urgenti arrivino subito appena online.
-const CACHE = 'sofia-u5-v10';
+// Strategy: bypass anche HTTP cache del browser (cache:'no-store') così quiz/data
+// freschi appena online. Fallback su cache SW solo se offline.
+const CACHE = 'sofia-u5-v11';
 const ASSETS = ['./', 'index.html', 'style.css', 'app.js', 'data.js', 'manifest.json', 'icon.svg'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS.map(a => new Request(a, {cache: 'reload'})))));
   self.skipWaiting();
 });
 
@@ -17,10 +17,18 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
-  // Solo same-origin (escludi CDN esterni)
   if (url.origin !== location.origin) return;
+  // Bypass HTTP cache del browser: forza fetch fresco dal server ad ogni richiesta
+  const freshRequest = new Request(e.request.url, {
+    method: 'GET',
+    headers: e.request.headers,
+    mode: 'same-origin',
+    credentials: 'same-origin',
+    cache: 'no-store',
+    redirect: 'follow'
+  });
   e.respondWith(
-    fetch(e.request).then(res => {
+    fetch(freshRequest).then(res => {
       if (res && res.ok) {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
@@ -30,7 +38,6 @@ self.addEventListener('fetch', e => {
   );
 });
 
-// Notifica client quando arriva nuovo SW
 self.addEventListener('message', e => {
   if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
