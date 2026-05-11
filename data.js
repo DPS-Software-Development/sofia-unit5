@@ -132,16 +132,16 @@ const QUIZ = [
   { q: "Quale verbo NON appare nel box degli imperativi a p.105?", options: ["go", "cross", "turn", "swim"], correct: 3, tag: "Imperatives" },
   { q: "Quale è l'imperativo corretto davanti a un segnale di STOP? (p.105)", options: ["Go", "Stop", "Turn", "Cross"], correct: 1, tag: "Imperatives" },
 
-  // ----- ROMANS (9) -----
-  { q: "Da quale parola latina deriva il suffisso -chester? (p.110)", options: ["villa", "castrum", "forum", "thermae"], correct: 1, tag: "Romans" },
-  { q: "Cosa significa 'castrum' in latino? (p.110)", options: ["acqua", "città", "fortificazione", "strada"], correct: 2, tag: "Romans" },
-  { q: "Quale generale guidò i Romani in Britannia nel 55 BC? (p.110)", options: ["Emperor Claudius", "Julius Caesar", "Augustus", "Hadrian"], correct: 1, tag: "Romans" },
-  { q: "Per quanti anni rimasero i Romani in Britannia? (p.110)", options: ["circa 100 anni", "circa 200 anni", "circa 400 anni", "circa 500 anni"], correct: 2, tag: "Romans" },
-  { q: "Quale imperatore fece costruire un ponte e una città sul fiume Thames nel 43 AD? (p.110)", options: ["Julius Caesar", "Emperor Claudius", "Augustus", "Nerone"], correct: 1, tag: "Romans" },
-  { q: "Cosa significa l'abbreviazione 'BC'? (p.110)", options: ["Before Christ", "Britain Country", "British Calendar", "Before Caesar"], correct: 0, tag: "Romans" },
-  { q: "Cosa significa l'abbreviazione 'AD'? (p.110)", options: ["After Death", "Ancient Days", "Anno Domini", "After Domitian"], correct: 2, tag: "Romans" },
-  { q: "Da quale parola deriva il nome 'Britain'? (p.110)", options: ["Britannia", "Britain", "Britanno", "Brigantia"], correct: 0, tag: "Romans" },
-  { q: "Quale di queste città NON è citata tra quelle romane a p.110?", options: ["York", "Bath", "Winchester", "Liverpool"], correct: 3, tag: "Romans" },
+  // ----- ROMANS (9) - solo vocabolario inglese + reading comprehension -----
+  { q: "Come si dice 'imperatore' in inglese? (vocab Romans, p.110)", options: ["museum", "emperor", "forum", "tower"], correct: 1, tag: "Romans" },
+  { q: "Cosa significa 'fortresses' in italiano? (vocab Romans, p.110)", options: ["foreste", "fortezze", "ferrovie", "fontane"], correct: 1, tag: "Romans" },
+  { q: "Come si dice 'anfiteatro' in inglese? (vocab Romans, p.111)", options: ["theatre", "museum", "amphitheatre", "temple"], correct: 2, tag: "Romans" },
+  { q: "Cosa significa 'temple' in italiano? (vocab Romans, p.111)", options: ["torre", "foro", "tempio", "mercato"], correct: 2, tag: "Romans" },
+  { q: "Come si dice 'mercato' in inglese? (vocab Romans, p.111)", options: ["forum", "tower", "market", "street"], correct: 2, tag: "Romans" },
+  { q: "Cosa significa 'tower' in italiano? (vocab Romans, p.111)", options: ["tempio", "foro", "strada", "torre"], correct: 3, tag: "Romans" },
+  { q: "Come si dice 'strada' in inglese? (vocab Romans, p.111)", options: ["market", "forum", "street", "tower"], correct: 2, tag: "Romans" },
+  { q: "What does 'BC' mean in English? (p.110)", options: ["Before Christ", "British Calendar", "Big Century", "Before Caesar"], correct: 0, tag: "Romans" },
+  { q: "What does 'AD' mean in English? (p.110)", options: ["After Death", "Anno Domini", "Ancient Days", "After Day"], correct: 1, tag: "Romans" },
 
   // ----- BATHS (5) -----
   { q: "Come si dice 'spogliatoi' in inglese? (p.108)", options: ["hot room", "warm room", "changing rooms", "cold room"], correct: 2, tag: "Baths" },
@@ -174,13 +174,13 @@ const FILL_GAP = [
   { sentence: "___ the door, please. (p.105)", choices: ["Open", "Opens", "Opening"], correct: 0, topic: "Imperatives" },
   { sentence: "Don't ___ the animals. (p.105)", choices: ["food", "feed", "feet"], correct: 1, topic: "Imperatives" },
 
-  // ----- ROMANS (6) -----
-  { sentence: "When the Romans arrive in Britain in 55 BC, they are led by ___. (p.110)", choices: ["Emperor Claudius", "Julius Caesar", "Hadrian"], correct: 1, topic: "Romans" },
-  { sentence: "The Romans stay in Britain for almost ___ years. (p.110)", choices: ["100", "200", "400"], correct: 2, topic: "Romans" },
-  { sentence: "In 43 AD Emperor Claudius' army build a town on the river Thames and call it ___. (p.110)", choices: ["Londinium", "Britannia", "Eboracum"], correct: 0, topic: "Romans" },
-  { sentence: "The name Britain comes from ___, the name given by the Romans. (p.110)", choices: ["Britannia", "Castrum", "Forum"], correct: 0, topic: "Romans" },
-  { sentence: "The Romans build roads, fortresses, villas and ___. (p.110)", choices: ["thermal baths", "amphitheatres", "temples"], correct: 0, topic: "Romans" },
-  { sentence: "The names ending in -chester, -cester or -caster derive from the Latin word ___. (p.110)", choices: ["forum", "castrum", "thermae"], correct: 1, topic: "Romans" },
+  // ----- ROMANS (6) - reading comprehension del testo + vocabolario -----
+  { sentence: "Read p.110: 'They start to build ___, fortresses, villas and thermal baths.'", choices: ["roads", "ships", "schools"], correct: 0, topic: "Romans" },
+  { sentence: "Read p.110: 'They build roads, fortresses, villas and ___ baths.'", choices: ["cold", "thermal", "warm"], correct: 1, topic: "Romans" },
+  { sentence: "Read p.111: 'Pretend you are at the tourist ___ office.'", choices: ["museum", "information", "shopping"], correct: 1, topic: "Romans" },
+  { sentence: "Read p.111: 'Roman ___ and Forum (city hall + market place).'", choices: ["Basilica", "Tower", "Temple"], correct: 0, topic: "Romans" },
+  { sentence: "Read p.111: 'Roman objects are ___ here.' (Museum of London)", choices: ["sold", "displayed", "lost"], correct: 1, topic: "Romans" },
+  { sentence: "Read p.111: 'The remains of the largest ___ in Britain lie here.'", choices: ["museum", "temple", "amphitheatre"], correct: 2, topic: "Romans" },
 
   // ----- BATHS (4) -----
   { sentence: "Please go to the ___ rooms. (p.108)", choices: ["changing", "hot", "cold"], correct: 0, topic: "Baths" },
@@ -209,12 +209,12 @@ const TRUE_FALSE = [
   { s: "'Don't open the window!' è una forma affermativa. (p.105 - è negativa)", correct: false, tag: "Imperatives" },
   { s: "Il verbo 'feed' appare nel box degli imperativi di p.105.", correct: true, tag: "Imperatives" },
 
-  // ----- ROMANS (5) -----
-  { s: "I Romani arrivarono in Britannia nel 55 BC guidati da Julius Caesar. (p.110)", correct: true, tag: "Romans" },
-  { s: "I Romani rimasero in Britannia per circa 100 anni. (p.110 - rimasero quasi 400 anni)", correct: false, tag: "Romans" },
-  { s: "La parola latina 'castrum' significa 'acqua'. (p.110 - significa fortificazione)", correct: false, tag: "Romans" },
-  { s: "York, Bath e Winchester sono città fondate dai Romani. (p.110)", correct: true, tag: "Romans" },
-  { s: "Londinium è il nome che i Romani diedero a una città sul fiume Thames. (p.110)", correct: true, tag: "Romans" },
+  // ----- ROMANS (5) - vocabolario inglese + reading -----
+  { s: "La parola inglese 'emperor' significa 'imperatore'. (p.110)", correct: true, tag: "Romans" },
+  { s: "La parola inglese 'temple' significa 'torre'. (p.111 - significa tempio)", correct: false, tag: "Romans" },
+  { s: "La parola inglese 'amphitheatre' significa 'anfiteatro'. (p.111)", correct: true, tag: "Romans" },
+  { s: "Nel testo a p.110 si dice che i Romani costruirono roads, fortresses, villas e thermal baths.", correct: true, tag: "Romans" },
+  { s: "La parola inglese 'fortresses' significa 'foreste'. (p.110 - significa fortezze)", correct: false, tag: "Romans" },
 
   // ----- BATHS (3) -----
   { s: "Nelle terme romane si entra prima nella cold room. (p.109 - prima nella hot room)", correct: false, tag: "Baths" },
@@ -243,20 +243,20 @@ const SEQUENCE = [
     tag: "Directions"
   },
 
-  // ----- ROMANS (3) -----
+  // ----- ROMANS (3) - reading order, no historical chronology -----
   {
-    prompt: "Metti in ordine cronologico gli eventi della storia romana in Britannia (p.110-111):",
-    items: ["55 BC: Julius Caesar arrives in Britain", "43 AD: Emperor Claudius' army builds a town on the Thames", "50 AD: Londinium is founded", "After almost 400 years the Romans leave Britain"],
+    prompt: "Metti in ordine le frasi dell'esempio di indicazioni p.111:",
+    items: ["Excuse me, how can I get to the Temple of Mithras?", "Go straight on,", "then turn left", "on Victoria street."],
     tag: "Romans"
   },
   {
-    prompt: "Metti in ordine le frasi del testo 'Roads to Rome' (p.110):",
+    prompt: "Metti in ordine le frasi del testo 'Roads to Rome' (p.110, come scritte nel libro):",
     items: ["The name Britain comes from Britannia.", "The Romans arrive in Britain in 55 BC.", "They build roads, fortresses, villas and thermal baths.", "They stay for almost 400 years."],
     tag: "Romans"
   },
   {
-    prompt: "Metti in ordine le cose che i Romani costruirono in Britannia (p.110):",
-    items: ["roads", "fortresses", "villas", "thermal baths"],
+    prompt: "Metti in ordine le parole come appaiono nel testo p.110 ('they build ___, ___, ___ and ___ baths'):",
+    items: ["roads", "fortresses", "villas", "thermal"],
     tag: "Romans"
   },
 
