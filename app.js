@@ -3,6 +3,7 @@
 // Multi-utente: ogni nome ha le sue stats/stelle isolate (localStorage namespaceato)
 
 const app = document.getElementById('app');
+const APP_VERSION = 'v12';
 
 // ===== Multi-user =====
 function sanitizeName(s) {
@@ -232,6 +233,7 @@ function renderWelcome() {
         ${recentChips}
       </div>
       <div class="welcome-foot">I tuoi progressi (stelle, errori, statistiche) restano <strong>solo per te</strong> su questo dispositivo.</div>
+      <div class="app-version">${escape(APP_VERSION)}</div>
     </div>
   `;
 
@@ -318,6 +320,7 @@ function renderHome() {
       <div class="ico">💡</div>
       <div><strong>Fun fact:</strong> ${escape(state.funFact)}</div>
     </div>
+    <div class="app-version">English Adventure ${escape(APP_VERSION)}</div>
   `;
   document.querySelectorAll('.tile').forEach(t => {
     t.onclick = () => {
