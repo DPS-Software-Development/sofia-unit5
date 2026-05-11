@@ -1,18 +1,105 @@
 // Sofia's English Adventure - Unit 5
-// Single-file SPA with vanilla JS
+// Con tracking errori, adaptive review, ripassa errori, report dashboard, audio TTS
 
 const app = document.getElementById('app');
 
 // ===== State =====
 const state = {
-  screen: 'home',
   stars: parseInt(localStorage.getItem('sofia_u5_stars') || '0', 10),
+  stats: JSON.parse(localStorage.getItem('sofia_u5_stats') || '{"attempts":[],"v":2}'),
   funFact: FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)],
 };
 
 function saveStars(delta) {
   state.stars += delta;
   localStorage.setItem('sofia_u5_stars', String(state.stars));
+}
+
+function saveStats() {
+  // Keep last 500 attempts to bound storage
+  if (state.stats.attempts.length > 500) state.stats.attempts = state.stats.attempts.slice(-500);
+  localStorage.setItem('sofia_u5_stats', JSON.stringify(state.stats));
+}
+
+function logAttempt(type, id, topic, correct) {
+  state.stats.attempts.push({ type, id, topic, correct, ts: Date.now() });
+  saveStats();
+}
+
+function resetStats() {
+  state.stats = { attempts: [], v: 2 };
+  saveStats();
+}
+
+// ===== Stats helpers =====
+function getTopicStats() {
+  const out = {};
+  TOPIC_KEYS.forEach(t => { out[t] = { total: 0, correct: 0, pct: 0 }; });
+  state.stats.attempts.forEach(a => {
+    if (!out[a.topic]) out[a.topic] = { total: 0, correct: 0, pct: 0 };
+    out[a.topic].total++;
+    if (a.correct) out[a.topic].correct++;
+  });
+  Object.keys(out).forEach(t => {
+    out[t].pct = out[t].total ? Math.round(out[t].correct * 100 / out[t].total) : null;
+  });
+  return out;
+}
+
+function getWeakTopics(minAttempts = 3, threshold = 70) {
+  const stats = getTopicStats();
+  return Object.keys(stats).filter(t => stats[t].total >= minAttempts && stats[t].pct !== null && stats[t].pct < threshold);
+}
+
+function getItemHistory(type, id) {
+  return state.stats.attempts.filter(a => a.type === type && a.id === id).map(a => a.correct);
+}
+
+function isErrorItem(type, id) {
+  // "Errore pendente": l'ultima risposta è stata sbagliata E non l'ha azzeccata 2 volte di fila dopo
+  const hist = getItemHistory(type, id);
+  if (hist.length === 0) return false;
+  // Trova ultima risposta sbagliata
+  const lastWrongIdx = hist.lastIndexOf(false);
+  if (lastWrongIdx === -1) return false;
+  // Dopo l'ultimo sbaglio, contiamo i giusti consecutivi
+  const after = hist.slice(lastWrongIdx + 1);
+  return after.length < 2 || !after.slice(0, 2).every(Boolean);
+}
+
+function isMasteredItem(type, id) {
+  // Almeno 2 risposte giuste consecutive in coda, e ultima è giusta
+  const hist = getItemHistory(type, id);
+  if (hist.length < 2) return false;
+  return hist[hist.length - 1] && hist[hist.length - 2];
+}
+
+function getErrorItems() {
+  return {
+    quiz: QUIZ.map((q, i) => ({ ...q, _idx: i })).filter(q => isErrorItem('quiz', q._idx)),
+    fill: FILL_GAP.map((f, i) => ({ ...f, _idx: i })).filter(f => isErrorItem('fill', f._idx))
+  };
+}
+
+function adaptivePick(items, count, topicKey = 'tag') {
+  // 60% dai topic deboli, 40% random. Se non ci sono topic deboli, tutto random.
+  const tagged = items.map((item, idx) => ({ ...item, _idx: idx }));
+  const weak = getWeakTopics();
+  if (weak.length === 0 || tagged.length <= count) {
+    return shuffle(tagged).slice(0, count);
+  }
+  const weakOnes = tagged.filter(t => weak.includes(t[topicKey]));
+  const others = tagged.filter(t => !weak.includes(t[topicKey]));
+  const nWeak = Math.min(weakOnes.length, Math.ceil(count * 0.6));
+  const nOther = Math.min(others.length, count - nWeak);
+  const picked = [...shuffle(weakOnes).slice(0, nWeak), ...shuffle(others).slice(0, nOther)];
+  // Se per qualche motivo è corto, riempi
+  while (picked.length < count) {
+    const rest = tagged.filter(t => !picked.some(p => p._idx === t._idx));
+    if (rest.length === 0) break;
+    picked.push(rest[Math.floor(Math.random() * rest.length)]);
+  }
+  return shuffle(picked);
 }
 
 // ===== Helpers =====
@@ -51,13 +138,17 @@ function escape(s) {
 
 // ===== Screen: Home =====
 function renderHome() {
+  const errors = getErrorItems();
+  const totErrors = errors.quiz.length + errors.fill.length;
+  const totAttempts = state.stats.attempts.length;
+
   app.innerHTML = `
     <div class="hero">
       <h1>Hi Sofia! 👋</h1>
       <p>Unit 5 — Bath, here we come!</p>
-      <div class="stars">⭐ ${state.stars} stelle</div>
+      <div class="stars">⭐ ${state.stars} stelle · 📝 ${totAttempts} risposte</div>
     </div>
-    <div class="tile-grid">
+    <div class="tile-grid six">
       <div class="tile flashcards" data-go="flashcards">
         <div class="emoji">🎴</div>
         <div class="label">Flashcards</div>
@@ -66,7 +157,7 @@ function renderHome() {
       <div class="tile quiz" data-go="quiz">
         <div class="emoji">❓</div>
         <div class="label">Quiz</div>
-        <div class="desc">metti alla prova</div>
+        <div class="desc">10 domande adaptive</div>
       </div>
       <div class="tile matching" data-go="matching">
         <div class="emoji">🧩</div>
@@ -77,6 +168,16 @@ function renderHome() {
         <div class="emoji">✍️</div>
         <div class="label">Fill the gap</div>
         <div class="desc">completa la frase</div>
+      </div>
+      <div class="tile errors" data-go="ripasso">
+        <div class="emoji">🔁</div>
+        <div class="label">Ripassa errori</div>
+        <div class="desc">${totErrors > 0 ? `${totErrors} da rifare` : 'nessun errore!'}</div>
+      </div>
+      <div class="tile report" data-go="report">
+        <div class="emoji">📊</div>
+        <div class="label">Report</div>
+        <div class="desc">come sta andando</div>
       </div>
     </div>
     <div class="funfact">
@@ -91,6 +192,8 @@ function renderHome() {
       else if (go === 'quiz') renderQuiz();
       else if (go === 'matching') renderMatching();
       else if (go === 'fillgap') renderFillGap();
+      else if (go === 'ripasso') renderRipasso();
+      else if (go === 'report') renderReport();
     };
   });
 }
@@ -139,7 +242,7 @@ function renderFlashcards() {
     </div>
   `;
 
-  document.getElementById('back').onclick = () => { state.screen = 'home'; renderHome(); };
+  document.getElementById('back').onclick = renderHome;
   document.getElementById('card').onclick = (e) => {
     if (e.target.id === 'speak') return;
     flashState.flipped = !flashState.flipped;
@@ -167,11 +270,15 @@ function renderFlashcards() {
 }
 
 // ===== Screen: Quiz =====
-const quizState = { questions: [], idx: 0, score: 0, locked: false };
+const quizState = { questions: [], idx: 0, score: 0, locked: false, mode: 'adaptive' };
 
-function renderQuiz() {
-  // Init: shuffle 10 questions from the 20-question pool
-  quizState.questions = shuffle(QUIZ).slice(0, 10);
+function renderQuiz(mode = 'adaptive', sourceItems = null) {
+  quizState.mode = mode;
+  if (sourceItems) {
+    quizState.questions = shuffle(sourceItems);
+  } else {
+    quizState.questions = adaptivePick(QUIZ, 10, 'tag');
+  }
   quizState.idx = 0;
   quizState.score = 0;
   quizState.locked = false;
@@ -180,21 +287,23 @@ function renderQuiz() {
 
 function showQuizQuestion() {
   const total = quizState.questions.length;
-  if (quizState.idx >= total) return renderQuizEnd();
+  if (quizState.idx >= total || total === 0) return renderQuizEnd();
   const q = quizState.questions[quizState.idx];
   const pct = (quizState.idx / total) * 100;
+  const weakBadge = getWeakTopics().includes(q.tag) ? '<span class="weak-badge">🎯 topic da rafforzare</span>' : '';
 
   app.innerHTML = `
     <div class="header">
       <button class="back-btn" id="back">←</button>
       <div>
-        <h1>❓ Quiz</h1>
+        <h1>❓ Quiz ${quizState.mode === 'errors' ? '· 🔁' : ''}</h1>
         <div class="sub">Domanda ${quizState.idx + 1} di ${total} — score: ${quizState.score}</div>
       </div>
     </div>
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
     <div class="question-card">
-      <div class="tag">${escape(q.tag)}</div>
+      <button class="speak-btn-sm" id="speakq">🔊</button>
+      <div class="tag">${escape(q.tag)} ${weakBadge}</div>
       <div class="q">${escape(q.q)}</div>
     </div>
     <div class="options" id="options">
@@ -202,19 +311,22 @@ function showQuizQuestion() {
     </div>
   `;
 
-  document.getElementById('back').onclick = () => { renderHome(); };
+  document.getElementById('back').onclick = renderHome;
+  document.getElementById('speakq').onclick = () => speak(q.q);
   document.querySelectorAll('.option').forEach(btn => {
     btn.onclick = () => {
       if (quizState.locked) return;
       quizState.locked = true;
       const choice = parseInt(btn.dataset.i, 10);
       const correctIdx = q.correct;
+      const ok = choice === correctIdx;
+      logAttempt('quiz', q._idx, q.tag, ok);
       document.querySelectorAll('.option').forEach((b, i) => {
         b.classList.add('disabled');
         if (i === correctIdx) b.classList.add('correct');
-        else if (i === choice && choice !== correctIdx) b.classList.add('wrong');
+        else if (i === choice && !ok) b.classList.add('wrong');
       });
-      if (choice === correctIdx) { quizState.score++; }
+      if (ok) quizState.score++;
       setTimeout(() => {
         quizState.idx++;
         quizState.locked = false;
@@ -226,6 +338,20 @@ function showQuizQuestion() {
 
 function renderQuizEnd() {
   const total = quizState.questions.length;
+  if (total === 0) {
+    app.innerHTML = `
+      <div class="end-screen">
+        <div class="big-emoji">🎉</div>
+        <h2>Nessun errore!</h2>
+        <p style="color:var(--text-soft);">Hai padroneggiato tutto. Bravissima!</p>
+        <div class="actions">
+          <button class="btn full" id="home">Home</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('home').onclick = renderHome;
+    return;
+  }
   const pct = (quizState.score / total) * 100;
   let stars = 1;
   if (pct >= 60) stars = 2;
@@ -242,11 +368,13 @@ function renderQuizEnd() {
       <div class="stars-result">${'⭐'.repeat(stars)}</div>
       <div class="actions">
         <button class="btn full" id="again">Rigioca</button>
+        <button class="btn secondary full" id="report">Vedi report</button>
         <button class="btn secondary full" id="home">Home</button>
       </div>
     </div>
   `;
-  document.getElementById('again').onclick = renderQuiz;
+  document.getElementById('again').onclick = () => renderQuiz('adaptive');
+  document.getElementById('report').onclick = renderReport;
   document.getElementById('home').onclick = renderHome;
 }
 
@@ -257,7 +385,7 @@ function renderMatching() {
   const pool = shuffle(MATCHING_POOL).slice(0, 6);
   const items = [];
   pool.forEach((p, i) => {
-    items.push({ type: 'en', text: p.en, key: i, emoji: '' });
+    items.push({ type: 'en', text: p.en, key: i });
     items.push({ type: 'emoji', text: p.emoji, key: i, label: p.en });
   });
   matchState.pairs = shuffle(items);
@@ -313,7 +441,7 @@ function handleMatchClick(btn) {
     matchState.matched++;
     if (matchState.matched === matchState.total) {
       saveStars(2);
-      setTimeout(() => renderMatchingEnd(), 600);
+      setTimeout(renderMatchingEnd, 600);
     } else {
       const sub = document.querySelector('.header .sub');
       if (sub) sub.textContent = `Tocca una parola e poi l'immagine giusta — ${matchState.matched}/${matchState.total}`;
@@ -348,10 +476,15 @@ function renderMatchingEnd() {
 }
 
 // ===== Screen: Fill the Gap =====
-const fillState = { items: [], idx: 0, picked: null, score: 0, locked: false };
+const fillState = { items: [], idx: 0, picked: null, score: 0, locked: false, mode: 'adaptive' };
 
-function renderFillGap() {
-  fillState.items = shuffle(FILL_GAP).slice(0, 8);
+function renderFillGap(mode = 'adaptive', sourceItems = null) {
+  fillState.mode = mode;
+  if (sourceItems) {
+    fillState.items = shuffle(sourceItems);
+  } else {
+    fillState.items = adaptivePick(FILL_GAP, Math.min(8, FILL_GAP.length), 'topic');
+  }
   fillState.idx = 0;
   fillState.picked = null;
   fillState.score = 0;
@@ -370,12 +503,15 @@ function showFillItem() {
     <div class="header">
       <button class="back-btn" id="back">←</button>
       <div>
-        <h1>✍️ Fill the gap</h1>
+        <h1>✍️ Fill the gap ${fillState.mode === 'errors' ? '· 🔁' : ''}</h1>
         <div class="sub">Frase ${fillState.idx + 1} di ${total} · ${escape(f.topic)}</div>
       </div>
     </div>
     <div class="progress-bar"><div style="width:${(fillState.idx / total) * 100}%"></div></div>
-    <div class="fill-sentence">${sentenceHtml}</div>
+    <div class="fill-sentence">
+      <button class="speak-btn-sm" id="speakf">🔊</button>
+      ${sentenceHtml}
+    </div>
     <div class="fill-choices" id="choices">
       ${f.choices.map((c, i) => `<button class="fill-choice" data-i="${i}" ${fillState.locked ? 'disabled' : ''}>${escape(c)}</button>`).join('')}
     </div>
@@ -383,6 +519,10 @@ function showFillItem() {
     <button class="btn full" id="confirm" ${fillState.picked === null ? 'disabled' : ''}>Conferma</button>
   `;
   document.getElementById('back').onclick = renderHome;
+  document.getElementById('speakf').onclick = () => {
+    const fullSentence = f.sentence.replace('___', fillState.picked !== null ? f.choices[fillState.picked] : f.choices[f.correct]);
+    speak(fullSentence);
+  };
   document.querySelectorAll('.fill-choice').forEach(b => {
     b.onclick = () => {
       if (fillState.locked) return;
@@ -393,9 +533,10 @@ function showFillItem() {
   document.getElementById('confirm').onclick = () => {
     if (fillState.picked === null || fillState.locked) return;
     fillState.locked = true;
-    const correct = f.correct === fillState.picked;
+    const ok = f.correct === fillState.picked;
+    logAttempt('fill', f._idx, f.topic, ok);
     const blank = document.getElementById('blank');
-    if (correct) {
+    if (ok) {
       blank.style.color = 'var(--success)';
       blank.style.borderColor = 'var(--success)';
       fillState.score++;
@@ -416,6 +557,17 @@ function showFillItem() {
 
 function renderFillEnd() {
   const total = fillState.items.length;
+  if (total === 0) {
+    app.innerHTML = `
+      <div class="end-screen">
+        <div class="big-emoji">🎉</div>
+        <h2>Niente da ripassare!</h2>
+        <div class="actions"><button class="btn full" id="home">Home</button></div>
+      </div>
+    `;
+    document.getElementById('home').onclick = renderHome;
+    return;
+  }
   const pct = (fillState.score / total) * 100;
   let stars = 1;
   if (pct >= 60) stars = 2;
@@ -431,15 +583,147 @@ function renderFillEnd() {
       <div class="stars-result">${'⭐'.repeat(stars)}</div>
       <div class="actions">
         <button class="btn full" id="again">Rigioca</button>
+        <button class="btn secondary full" id="report">Vedi report</button>
         <button class="btn secondary full" id="home">Home</button>
       </div>
     </div>
   `;
-  document.getElementById('again').onclick = renderFillGap;
+  document.getElementById('again').onclick = () => renderFillGap('adaptive');
+  document.getElementById('report').onclick = renderReport;
   document.getElementById('home').onclick = renderHome;
 }
 
-// ===== PWA service worker (cache for offline use) =====
+// ===== Screen: Ripassa errori =====
+function renderRipasso() {
+  const err = getErrorItems();
+  const total = err.quiz.length + err.fill.length;
+  app.innerHTML = `
+    <div class="header">
+      <button class="back-btn" id="back">←</button>
+      <div>
+        <h1>🔁 Ripassa errori</h1>
+        <div class="sub">Solo le cose che hai sbagliato di recente</div>
+      </div>
+    </div>
+    <div class="ripasso-box">
+      <div class="ripasso-summary">
+        <div class="big-emoji">${total === 0 ? '🎉' : '🎯'}</div>
+        <p>
+          ${total === 0
+            ? 'Nessun errore in sospeso. Sei pronta per la verifica!'
+            : `Hai <strong>${total} cose</strong> da rivedere: <strong>${err.quiz.length}</strong> nel quiz, <strong>${err.fill.length}</strong> nelle frasi. Quando rispondi giusto 2 volte di fila a un esercizio, esce dalla lista.`}
+        </p>
+      </div>
+      <div class="ripasso-actions">
+        <button class="btn full" id="goquiz" ${err.quiz.length === 0 ? 'disabled' : ''}>
+          ❓ Ripassa ${err.quiz.length} quiz
+        </button>
+        <button class="btn full" id="gofill" ${err.fill.length === 0 ? 'disabled' : ''}>
+          ✍️ Ripassa ${err.fill.length} frasi
+        </button>
+      </div>
+    </div>
+  `;
+  document.getElementById('back').onclick = renderHome;
+  document.getElementById('goquiz').onclick = () => { if (err.quiz.length) renderQuiz('errors', err.quiz); };
+  document.getElementById('gofill').onclick = () => { if (err.fill.length) renderFillGap('errors', err.fill); };
+}
+
+// ===== Screen: Report =====
+function renderReport() {
+  const topicStats = getTopicStats();
+  const attempts = state.stats.attempts;
+  const totAtt = attempts.length;
+  const totCorrect = attempts.filter(a => a.correct).length;
+  const totPct = totAtt ? Math.round(totCorrect * 100 / totAtt) : 0;
+
+  // Lista items da ripassare (errori pendenti)
+  const errors = getErrorItems();
+  const errQuizList = errors.quiz.slice(0, 10).map(q =>
+    `<li><strong>${escape(q.tag)}</strong>: ${escape(q.q)} <em>→ ${escape(q.options[q.correct])}</em></li>`
+  ).join('') || '<li class="empty">nessun errore quiz</li>';
+  const errFillList = errors.fill.slice(0, 10).map(f =>
+    `<li><strong>${escape(f.topic)}</strong>: "${escape(f.sentence)}" <em>→ ${escape(f.choices[f.correct])}</em></li>`
+  ).join('') || '<li class="empty">nessun errore fill</li>';
+
+  // Padroneggiate (mastered)
+  const masteredQuiz = QUIZ.map((q, i) => ({ ...q, _idx: i })).filter(q => isMasteredItem('quiz', q._idx));
+  const masteredFill = FILL_GAP.map((f, i) => ({ ...f, _idx: i })).filter(f => isMasteredItem('fill', f._idx));
+  const masteredCount = masteredQuiz.length + masteredFill.length;
+
+  // Topic bars
+  const bars = TOPIC_KEYS.map(t => {
+    const s = topicStats[t] || { total: 0, correct: 0, pct: null };
+    const pct = s.pct ?? 0;
+    const label = s.pct === null ? 'mai testato' : `${s.correct}/${s.total} · ${pct}%`;
+    const isWeak = s.total >= 3 && s.pct !== null && s.pct < 70;
+    const color = TOPIC_META[t].color;
+    return `
+      <div class="report-row ${isWeak ? 'weak' : ''}">
+        <div class="report-row-head">
+          <span>${TOPIC_META[t].emoji} <strong>${t}</strong></span>
+          <span class="muted">${label}${isWeak ? ' 🎯' : ''}</span>
+        </div>
+        <div class="report-bar"><div style="width:${pct}%; background:${color};"></div></div>
+      </div>`;
+  }).join('');
+
+  // Ultima attività (semplice timeline)
+  const last5 = attempts.slice(-5).reverse().map(a => {
+    const when = new Date(a.ts).toLocaleString('it-IT', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+    return `<li>${a.correct ? '✅' : '❌'} <strong>${escape(a.topic)}</strong> <span class="muted">${escape(a.type)} · ${when}</span></li>`;
+  }).join('') || '<li class="empty">nessuna attività ancora</li>';
+
+  app.innerHTML = `
+    <div class="header">
+      <button class="back-btn" id="back">←</button>
+      <div>
+        <h1>📊 Report</h1>
+        <div class="sub">${totAtt} risposte totali · ${totPct}% giuste · ${masteredCount} padroneggiate</div>
+      </div>
+    </div>
+
+    <div class="card-block">
+      <h3>Andamento per topic</h3>
+      <div class="report-bars">${bars}</div>
+      <p class="report-hint">🎯 = topic da rafforzare (sotto 70%). L'app pesca più domande da qui.</p>
+    </div>
+
+    <div class="card-block">
+      <h3>Da ripassare (${errors.quiz.length + errors.fill.length})</h3>
+      <h4>Quiz</h4>
+      <ul class="report-list">${errQuizList}</ul>
+      <h4>Fill the gap</h4>
+      <ul class="report-list">${errFillList}</ul>
+    </div>
+
+    <div class="card-block">
+      <h3>Ultima attività</h3>
+      <ul class="report-list">${last5}</ul>
+    </div>
+
+    <div class="card-block">
+      <h3>Padroneggiate ${masteredCount > 0 ? '🌟' : ''}</h3>
+      <p class="muted">${masteredCount === 0 ? 'Ancora niente — rispondi giusto 2 volte di fila a uno stesso esercizio per "padroneggiarlo".' : `${masteredCount} esercizi nel "padronato" (almeno 2 risposte giuste di fila).`}</p>
+    </div>
+
+    <div class="card-block danger-block">
+      <h3>Reset</h3>
+      <p class="muted">Cancella tutte le risposte salvate (per ricominciare da zero).</p>
+      <button class="btn secondary full" id="reset">🗑️ Azzera dati</button>
+    </div>
+  `;
+  document.getElementById('back').onclick = renderHome;
+  document.getElementById('reset').onclick = () => {
+    if (confirm('Sicura? Cancellerai tutto lo storico delle risposte.')) {
+      resetStats();
+      toast('Dati azzerati 🧹');
+      renderReport();
+    }
+  };
+}
+
+// ===== PWA service worker =====
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
