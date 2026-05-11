@@ -7,12 +7,14 @@ const app = document.getElementById('app');
 function loadStats() {
   try {
     const raw = localStorage.getItem('sofia_u5_stats');
-    if (!raw) return { attempts: [], v: 2 };
+    if (!raw) return { attempts: [], v: 3 };
     const parsed = JSON.parse(raw);
-    if (!parsed || !Array.isArray(parsed.attempts)) return { attempts: [], v: 2 };
+    if (!parsed || !Array.isArray(parsed.attempts)) return { attempts: [], v: 3 };
+    // Bump v: 2 → v: 3 invalida vecchie attempts: indici QUIZ/FILL_GAP cambiati post fact-check
+    if (parsed.v !== 3) return { attempts: [], v: 3 };
     return parsed;
   } catch {
-    return { attempts: [], v: 2 };
+    return { attempts: [], v: 3 };
   }
 }
 
@@ -48,7 +50,7 @@ function logAttempt(type, id, topic, correct) {
 }
 
 function resetStats() {
-  state.stats = { attempts: [], v: 2 };
+  state.stats = { attempts: [], v: 3 };
   saveStats();
 }
 

@@ -71,7 +71,7 @@ const TOPICS = {
       { en: "temple", it: "tempio", emoji: "⛩️" },
       { en: "forum", it: "foro romano", emoji: "⚖️" },
       { en: "tower", it: "torre", emoji: "🗼" },
-      { en: "fortifications", it: "fortificazioni", emoji: "🏰" },
+      { en: "fortresses", it: "fortezze", emoji: "🏰" },
       { en: "street", it: "strada", emoji: "🛣️" },
       { en: "market", it: "mercato", emoji: "🛒" },
       { en: "museum", it: "museo", emoji: "🏛️" },
@@ -86,9 +86,8 @@ const TOPICS = {
     items: [
       { en: "hot room", it: "sala calda (calidarium)", emoji: "🔥" },
       { en: "warm room", it: "sala tiepida (tepidarium)", emoji: "🌡️" },
-      { en: "cool room", it: "sala fredda (frigidarium)", emoji: "❄️" },
+      { en: "cold room", it: "sala fredda (frigidarium)", emoji: "❄️" },
       { en: "changing rooms", it: "spogliatoi", emoji: "👕" },
-      { en: "scared", it: "spaventato", emoji: "😨" },
       { en: "Roman baths", it: "terme romane", emoji: "♨️" }
     ]
   }
@@ -131,25 +130,25 @@ const QUIZ = [
   // Romans (3)
   { q: "Chi portò i Romani in Britain nel 55 BC?", options: ["Hadrian", "Julius Caesar", "Augustus", "Nero"], correct: 1, tag: "Romans" },
   { q: "What's the Roman name for London?", options: ["Londinium", "Britannia", "Bath", "York"], correct: 0, tag: "Romans" },
-  { q: "Hadrian's Wall was built in...", options: ["55 BC", "122 AD", "1066 AD", "476 AD"], correct: 1, tag: "Romans" },
+  { q: "Quale imperatore romano conquistò la Britain nel 43 AD?", options: ["Julius Caesar", "Augustus", "Claudius", "Nero"], correct: 2, tag: "Romans" },
 
   // Baths (1)
-  { q: "Qual è l'ordine delle sale alle terme romane?", options: ["hot → cool → warm", "cool → warm → hot", "warm → hot → cool", "hot → warm → cool"], correct: 2, tag: "Baths" },
+  { q: "Qual è l'ordine delle sale alle terme romane?", options: ["hot → cold → warm", "cold → warm → hot", "warm → hot → cold", "hot → warm → cold"], correct: 3, tag: "Baths" },
 
   // ===== Aggiunte v3: 15 domande extra =====
   // Romans (8)
   { q: "What did the Romans build across Britain to connect their towns?", options: ["Castles", "Roads", "Cathedrals", "Bridges only"], correct: 1, tag: "Romans" },
-  { q: "Which modern city was called 'Eboracum' by the Romans?", options: ["Manchester", "Bath", "York", "Chester"], correct: 2, tag: "Romans" },
-  { q: "What was the Roman name for Manchester?", options: ["Mancunium", "Mamucium", "Manucia", "Mancastrum"], correct: 1, tag: "Romans" },
+  { q: "I templi romani (temples) servivano per...", options: ["vendere cibo", "guardare gare", "pregare gli dei", "fare il bagno"], correct: 2, tag: "Romans" },
+  { q: "Nel forum (forum) romano la gente...", options: ["combatteva i gladiatori", "discuteva di affari e leggi", "faceva il bagno", "vedeva spettacoli"], correct: 1, tag: "Romans" },
   { q: "What does 'AD' stand for in dates like AD 122?", options: ["After Death", "Anno Domini", "Ancient Days", "All Date"], correct: 1, tag: "Romans" },
-  { q: "Why did the Romans build fortifications around their settlements?", options: ["For decoration", "To attract tourists", "For protection", "To store water"], correct: 2, tag: "Romans" },
-  { q: "In Londinium, where could Romans watch gladiator fights?", options: ["At the Forum", "At the Amphitheatre", "At the Basilica", "At the Mithraeum"], correct: 1, tag: "Romans" },
-  { q: "What was the Mithraeum in Roman London?", options: ["A market", "A bath", "A temple", "A theatre"], correct: 2, tag: "Romans" },
+  { q: "Perché i Romani costruivano le fortezze (fortresses) attorno alle città?", options: ["per decorazione", "per attirare turisti", "per protezione", "per conservare l'acqua"], correct: 2, tag: "Romans" },
+  { q: "In un anfiteatro (amphitheatre) romano si poteva...", options: ["pregare", "guardare i gladiatori", "comprare cibo", "fare il bagno"], correct: 1, tag: "Romans" },
+  { q: "Come si dice 'mercato' in inglese (vocabolario Romans)?", options: ["forum", "tower", "market", "street"], correct: 2, tag: "Romans" },
   { q: "Which river runs through London, also in Roman times?", options: ["The Severn", "The Walbrook", "The Thames", "The Avon"], correct: 2, tag: "Romans" },
 
   // Baths (2)
-  { q: "In the Roman baths story, where do people go FIRST?", options: ["The cool room", "The changing room", "The warm room", "The hot room"], correct: 1, tag: "Baths" },
-  { q: "What do people do in the cool room of the Roman baths?", options: ["Sweat a lot", "Relax and chat", "Take a final swim", "Get a massage"], correct: 2, tag: "Baths" },
+  { q: "Quando arrivi alle terme romane, dove vai per PRIMA cosa?", options: ["The cold room", "The changing rooms", "The warm room", "The hot room"], correct: 1, tag: "Baths" },
+  { q: "Nella sala calda (hot room) delle terme, le persone...", options: ["nuotano", "sudano molto", "dormono", "mangiano"], correct: 1, tag: "Baths" },
 
   // Directions (3)
   { q: "In the dialogue 'The library is ___ the bank', which word fits?", options: ["between", "opposite", "behind", "under"], correct: 1, tag: "Directions" },
@@ -169,7 +168,7 @@ const FILL_GAP = [
   { sentence: "The café is ___ the bank and the school.", choices: ["near", "between", "behind"], correct: 1, topic: "Directions" },
   { sentence: "Excuse me, ___ is the aquarium?", choices: ["what", "where", "when"], correct: 1, topic: "Directions" },
   { sentence: "Go straight on, then ___ left at the traffic lights.", choices: ["turn", "go", "cross"], correct: 0, topic: "Directions" },
-  { sentence: "Hadrian's Wall is in the ___ of England.", choices: ["south", "east", "north"], correct: 2, topic: "Romans" },
+  { sentence: "The Roman emperor ___ came to Britain in AD 43.", choices: ["Caesar", "Claudius", "Hadrian"], correct: 1, topic: "Romans" },
   { sentence: "In the Roman baths, you relax in the ___ room.", choices: ["hot", "noisy", "fast"], correct: 0, topic: "Baths" },
   { sentence: "How can I ___ to the hospital?", choices: ["go", "get", "do"], correct: 1, topic: "Directions" },
   { sentence: "___ the road carefully!", choices: ["Cross", "Crossing", "Crossed"], correct: 0, topic: "Imperatives" },
@@ -199,10 +198,10 @@ const MATCHING_POOL = [
 const FUN_FACTS = [
   "Bath è una città dell'Inghilterra famosa per le sue terme romane! 🏛️♨️",
   "I Romani arrivarono in Britain con Giulio Cesare nel 55 a.C. ⚔️",
-  "Hadrian's Wall è lungo 117 km e ha quasi 2000 anni! 🧱",
+  "L'imperatore Claudio conquistò davvero la Britain nel 43 d.C. 👑",
   "Londinium era il nome romano di Londra. 🏛️",
-  "Nelle terme romane c'erano tre sale: hot, warm e cool. 🔥🌡️❄️",
+  "Nelle terme romane c'erano tre sale: hot, warm e cold. 🔥🌡️❄️",
   "Imperative = ordine. \"Be quiet!\" significa \"Stai zitto!\" 🤫",
   "\"Opposite\" significa \"di fronte a\", non \"opposto\" come potresti pensare! 🔄",
-  "Manchester, York, Chester e Lancaster sono tutte città fondate dai Romani! 🇮🇹➡️🇬🇧"
+  "I Romani costruirono molte strade lastricate ancora visibili oggi! 🛣️"
 ];

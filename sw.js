@@ -1,5 +1,5 @@
 // Minimal offline cache for Sofia's English app
-const CACHE = 'sofia-u5-v3';
+const CACHE = 'sofia-u5-v4';
 const ASSETS = ['./', 'index.html', 'style.css', 'app.js', 'data.js', 'manifest.json', 'icon.svg'];
 
 self.addEventListener('install', e => {
