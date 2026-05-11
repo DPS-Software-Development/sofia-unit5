@@ -1,0 +1,14 @@
+{
+  "name": "Sofia's English — Unit 5",
+  "short_name": "English U5",
+  "description": "Ripasso interattivo di Unit 5 (Hello World, Classe 5).",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#7c3aed",
+  "background_color": "#fef3c7",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
