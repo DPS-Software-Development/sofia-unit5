@@ -81,7 +81,7 @@ const QUIZ = [
   { q: "Cosa significa 'shopping centre'? (p.98)", options: ["centro sportivo", "centro commerciale", "fermata dell'autobus", "ospedale"], correct: 1, tag: "Places" },
   { q: "Where can people see ancient statues or paintings? (p.112)", options: ["museum", "library", "park", "bank"], correct: 0, tag: "Places" },
   { q: "Where do people go shopping? (p.112)", options: ["library", "shopping centre", "museum", "cinema"], correct: 1, tag: "Places" },
-  { q: "Where is Bath? (p.98)", options: ["in the north of England", "in the south of England", "in Wales", "in Scotland"], correct: 1, tag: "Places" },
+  { q: "Cosa significa 'park' in italiano? (p.101)", options: ["scuola", "parco", "ospedale", "negozio"], correct: 1, tag: "Places" },
 
   // ----- DIRECTIONS (8) -----
   { q: "Cosa significa 'Go straight on'? (p.103)", options: ["gira a destra", "gira a sinistra", "vai dritto", "attraversa la strada"], correct: 2, tag: "Directions" },
@@ -104,7 +104,7 @@ const QUIZ = [
 // FILL THE GAP: 25 frasi del libro con buco. 100% basato su PDF Unit 5.
 const FILL_GAP = [
   // ----- PLACES (5) -----
-  { sentence: "Here we are in Bath, in the ___ of England. (p.98)", choices: ["north", "south", "east"], correct: 1, topic: "Places" },
+  { sentence: "The park is ___ to the cinema. (p.101)", choices: ["next", "in", "between"], correct: 0, topic: "Places" },
   { sentence: "The hospital is in front of the ___. (p.101)", choices: ["cinema", "library", "museum"], correct: 0, topic: "Places" },
   { sentence: "People send letters from the ___. (p.112)", choices: ["library", "post office", "café"], correct: 1, topic: "Places" },
   { sentence: "People do physical exercise at the ___. (p.112)", choices: ["sports centre", "shopping centre", "museum"], correct: 0, topic: "Places" },
@@ -112,7 +112,7 @@ const FILL_GAP = [
 
   // ----- DIRECTIONS (6) -----
   { sentence: "Excuse me, how can I get ___ the library? (p.104)", choices: ["to", "at", "in"], correct: 0, topic: "Directions" },
-  { sentence: "Go straight on, then turn ___ on Victoria street. (p.111)", choices: ["right", "left", "back"], correct: 1, topic: "Directions" },
+  { sentence: "Go ___ on at the traffic lights. (p.103)", choices: ["straight", "turn", "past"], correct: 0, topic: "Directions" },
   { sentence: "At the ___ turn left. (p.103)", choices: ["traffic lights", "school", "park"], correct: 0, topic: "Directions" },
   { sentence: "Go ___ the school. (p.103)", choices: ["past", "next", "between"], correct: 0, topic: "Directions" },
   { sentence: "At the ___ turn left and go along Charles Street. (p.106)", choices: ["traffic lights", "roundabout", "crossroads"], correct: 1, topic: "Directions" },
@@ -128,7 +128,7 @@ const FILL_GAP = [
 // TRUE_FALSE: 20 affermazioni vero/falso. 100% basato su PDF Unit 5.
 const TRUE_FALSE = [
   // ----- PLACES (4) -----
-  { s: "Bath è nel sud dell'Inghilterra.", correct: true, tag: "Places" },
+  { s: "'Sports centre' significa 'centro sportivo'.", correct: true, tag: "Places" },
   { s: "La parola inglese 'park' significa 'parco'.", correct: true, tag: "Places" },
   { s: "La parola inglese 'library' significa 'libreria' (il negozio di libri).", correct: false, tag: "Places" },
   { s: "La parola inglese 'post office' significa 'ufficio postale'.", correct: true, tag: "Places" },
@@ -154,8 +154,8 @@ const TRUE_FALSE = [
 const SEQUENCE = [
   // ----- PLACES (1) -----
   {
-    prompt: "Metti in ordine le frasi del dialogo iniziale a Bath (p.98-99):",
-    items: ["Here we are in Bath, in the south of England.", "What a lovely town!", "Look at the map!", "There's a nice park, an important museum and a library."],
+    prompt: "Metti in ordine le frasi tipiche per chiedere indicazioni gentilmente in città:",
+    items: ["Excuse me,", "how can I get to the museum?", "Thank you very much.", "Goodbye!"],
     tag: "Places"
   },
 
