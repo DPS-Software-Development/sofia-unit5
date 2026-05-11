@@ -130,7 +130,7 @@ const QUIZ = [
   // Romans (3)
   { q: "Chi portò i Romani in Britain nel 55 BC?", options: ["Hadrian", "Julius Caesar", "Augustus", "Nero"], correct: 1, tag: "Romans" },
   { q: "What's the Roman name for London?", options: ["Londinium", "Britannia", "Bath", "York"], correct: 0, tag: "Romans" },
-  { q: "Quale imperatore romano conquistò la Britain nel 43 AD?", options: ["Julius Caesar", "Augustus", "Claudius", "Nero"], correct: 2, tag: "Romans" },
+  { q: "Quale imperatore romano arrivò in Britain nel 43 AD?", options: ["Julius Caesar", "Augustus", "Claudius", "Nero"], correct: 2, tag: "Romans" },
 
   // Baths (1)
   { q: "Qual è l'ordine delle sale alle terme romane?", options: ["hot → cold → warm", "cold → warm → hot", "warm → hot → cold", "hot → warm → cold"], correct: 3, tag: "Baths" },
@@ -139,7 +139,7 @@ const QUIZ = [
   // Romans (8)
   { q: "What did the Romans build across Britain to connect their towns?", options: ["Castles", "Roads", "Cathedrals", "Bridges only"], correct: 1, tag: "Romans" },
   { q: "I templi romani (temples) servivano per...", options: ["vendere cibo", "guardare gare", "pregare gli dei", "fare il bagno"], correct: 2, tag: "Romans" },
-  { q: "Nel forum (forum) romano la gente...", options: ["combatteva i gladiatori", "discuteva di affari e leggi", "faceva il bagno", "vedeva spettacoli"], correct: 1, tag: "Romans" },
+  { q: "Cos'era il forum nelle città romane?", options: ["una sala da bagno", "il mercato e luogo d'incontro", "un tempio", "un anfiteatro"], correct: 1, tag: "Romans" },
   { q: "What does 'AD' stand for in dates like AD 122?", options: ["After Death", "Anno Domini", "Ancient Days", "All Date"], correct: 1, tag: "Romans" },
   { q: "Perché i Romani costruivano le fortezze (fortresses) attorno alle città?", options: ["per decorazione", "per attirare turisti", "per protezione", "per conservare l'acqua"], correct: 2, tag: "Romans" },
   { q: "In un anfiteatro (amphitheatre) romano si poteva...", options: ["pregare", "guardare i gladiatori", "comprare cibo", "fare il bagno"], correct: 1, tag: "Romans" },
@@ -179,7 +179,7 @@ const FILL_GAP = [
 
   // ===== Aggiunte v3: 8 frasi extra =====
   { sentence: "Excuse me, how ___ I get to the museum?", choices: ["can", "do", "am"], correct: 0, topic: "Directions" },
-  { sentence: "Pass ___ the chemist's and turn left.", choices: ["on", "by", "at"], correct: 1, topic: "Directions" },
+  { sentence: "___ past the chemist's and turn left.", choices: ["Go", "Goes", "Going"], correct: 0, topic: "Directions" },
   { sentence: "At the traffic lights, ___ straight on.", choices: ["go", "going", "goes"], correct: 0, topic: "Directions" },
   { sentence: "In ___ 43 the Emperor Claudius came to Britain.", choices: ["BC", "AD", "AC"], correct: 1, topic: "Romans" },
   { sentence: "The Romans came to Britain to ___ many towns.", choices: ["destroy", "build", "buy"], correct: 1, topic: "Romans" },

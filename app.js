@@ -755,10 +755,31 @@ function renderReport() {
   };
 }
 
-// ===== PWA service worker =====
+// ===== PWA service worker + auto-update =====
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      if (!reg) return;
+      // Controlla update ogni 30 minuti mentre l'app è aperta
+      setInterval(() => reg.update().catch(() => {}), 30 * 60 * 1000);
+      // Quando un nuovo SW è installato e in waiting, attivalo subito
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            nw.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+    }).catch(() => {});
+    // Quando il nuovo SW prende il controllo, ricarica una sola volta
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloaded) return;
+      reloaded = true;
+      location.reload();
+    });
   });
 }
 
