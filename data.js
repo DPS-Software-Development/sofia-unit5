@@ -161,8 +161,8 @@ const SEQUENCE = [
 
   // ----- DIRECTIONS (2) -----
   {
-    prompt: "Metti in ordine i passi per andare al Tempio di Mitra (p.111):",
-    items: ["Excuse me, how can I get to the Temple of Mithras?", "Go straight on,", "then turn left", "on Victoria street."],
+    prompt: "Metti in ordine la richiesta di indicazioni per il post office (p.104):",
+    items: ["Excuse me, how can I get to the post office?", "Go straight on", "and turn right.", "The post office is in front of the theatre."],
     tag: "Directions"
   },
   {
