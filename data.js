@@ -20,7 +20,6 @@ const TOPICS = {
       { en: "park", it: "parco", emoji: "🌳" },
       { en: "school", it: "scuola", emoji: "🏫" },
       { en: "aquarium", it: "acquario", emoji: "🐠" },
-      { en: "supermarket", it: "supermercato", emoji: "🏪" },
       { en: "chemist's", it: "farmacia", emoji: "💊" },
       { en: "cinema", it: "cinema", emoji: "🎬" }
     ]
