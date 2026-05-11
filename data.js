@@ -152,8 +152,8 @@ const QUIZ = [
 
   // Directions (3)
   { q: "In the dialogue 'The library is ___ the bank', which word fits?", options: ["between", "opposite", "behind", "under"], correct: 1, tag: "Directions" },
-  { q: "Which traffic feature has cars going in a circle?", options: ["Traffic lights", "Crossroads", "Roundabout", "Pavement"], correct: 2, tag: "Directions" },
-  { q: "Per la sicurezza in bicicletta servono...", options: ["a phone and a map", "a helmet, a bell, a light", "a hat and a scarf", "a backpack only"], correct: 1, tag: "Directions" },
+  { q: "Which traffic feature has cars going in a circle?", options: ["Traffic lights", "Crossroads", "Roundabout", "Zebra crossing"], correct: 2, tag: "Directions" },
+  { q: "Per la sicurezza in bicicletta servono...", options: ["a phone and a map", "a helmet, a bell, a light", "a book and a bag", "a coffee and a tea"], correct: 1, tag: "Directions" },
 
   // Imperatives (2)
   { q: "What's the imperative form for a 'no parking' sign?", options: ["Don't stop", "Don't park", "Don't turn", "Don't go"], correct: 1, tag: "Imperatives" },
@@ -173,7 +173,7 @@ const FILL_GAP = [
   { sentence: "How can I ___ to the hospital?", choices: ["go", "get", "do"], correct: 1, topic: "Directions" },
   { sentence: "___ the road carefully!", choices: ["Cross", "Crossing", "Crossed"], correct: 0, topic: "Imperatives" },
   // Places aggiunti per copertura
-  { sentence: "I want to buy bread. Let's go to the ___.", choices: ["supermarket", "library", "hospital"], correct: 0, topic: "Places" },
+  { sentence: "I want to see the fish at the ___.", choices: ["bank", "aquarium", "hospital"], correct: 1, topic: "Places" },
   { sentence: "I'm ill — I need to go to the ___.", choices: ["theatre", "museum", "hospital"], correct: 2, topic: "Places" },
   { sentence: "I want to see a play tonight at the ___.", choices: ["theatre", "bank", "park"], correct: 0, topic: "Places" },
 

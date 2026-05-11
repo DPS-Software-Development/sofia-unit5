@@ -1,7 +1,7 @@
 // Network-first cache for Sofia's English app
 // Strategy: prova rete prima (per avere sempre l'ultima versione di quiz/contenuti),
 // cache come fallback offline. Garantisce che fix urgenti arrivino subito appena online.
-const CACHE = 'sofia-u5-v8';
+const CACHE = 'sofia-u5-v9';
 const ASSETS = ['./', 'index.html', 'style.css', 'app.js', 'data.js', 'manifest.json', 'icon.svg'];
 
 self.addEventListener('install', e => {
