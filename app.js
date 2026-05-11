@@ -46,13 +46,14 @@ function starsKey() {
 function loadStats() {
   try {
     const raw = localStorage.getItem(statsKey());
-    if (!raw) return { attempts: [], v: 3 };
+    if (!raw) return { attempts: [], v: 4 };
     const parsed = JSON.parse(raw);
-    if (!parsed || !Array.isArray(parsed.attempts)) return { attempts: [], v: 3 };
-    if (parsed.v !== 3) return { attempts: [], v: 3 };
+    if (!parsed || !Array.isArray(parsed.attempts)) return { attempts: [], v: 4 };
+    // Bump v:3 → v:4 invalida vecchie attempts: indici QUIZ/FILL_GAP cambiati post fact-check rigoroso v8
+    if (parsed.v !== 4) return { attempts: [], v: 4 };
     return parsed;
   } catch {
-    return { attempts: [], v: 3 };
+    return { attempts: [], v: 4 };
   }
 }
 
@@ -94,7 +95,7 @@ function logAttempt(type, id, topic, correct) {
 }
 
 function resetStats() {
-  state.stats = { attempts: [], v: 3 };
+  state.stats = { attempts: [], v: 4 };
   saveStats();
 }
 

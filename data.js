@@ -111,7 +111,7 @@ const QUIZ = [
   { q: "Where do you see fish?", options: ["library", "aquarium", "post office", "school"], correct: 1, tag: "Places" },
   { q: "Where do you go if you are ill?", options: ["sports centre", "café", "hospital", "theatre"], correct: 2, tag: "Places" },
   { q: "Where do you send a letter from?", options: ["bank", "post office", "park", "library"], correct: 1, tag: "Places" },
-  { q: "Where do you buy food?", options: ["museum", "supermarket", "theatre", "hospital"], correct: 1, tag: "Places" },
+  { q: "Where do you watch a film?", options: ["museum", "cinema", "theatre", "hospital"], correct: 1, tag: "Places" },
   { q: "What's a 'chemist's'?", options: ["farmacia", "banca", "tabaccheria", "cinema"], correct: 0, tag: "Places" },
   { q: "Come si dice 'fermata dell'autobus'?", options: ["car park", "bus stop", "train station", "taxi"], correct: 1, tag: "Places" },
 
@@ -133,27 +133,27 @@ const QUIZ = [
   { q: "Quale imperatore romano arrivò in Britain nel 43 AD?", options: ["Julius Caesar", "Augustus", "Claudius", "Nero"], correct: 2, tag: "Romans" },
 
   // Baths (1)
-  { q: "Qual è l'ordine delle sale alle terme romane?", options: ["hot → cold → warm", "cold → warm → hot", "warm → hot → cold", "hot → warm → cold"], correct: 3, tag: "Baths" },
+  { q: "Alle terme romane, dopo i changing rooms, qual è l'ordine delle sale?", options: ["hot → cold → warm", "cold → warm → hot", "warm → hot → cold", "hot → warm → cold"], correct: 3, tag: "Baths" },
 
   // ===== Aggiunte v3: 15 domande extra =====
   // Romans (8)
   { q: "What did the Romans build across Britain to connect their towns?", options: ["Castles", "Roads", "Cathedrals", "Bridges only"], correct: 1, tag: "Romans" },
-  { q: "I templi romani (temples) servivano per...", options: ["vendere cibo", "guardare gare", "pregare gli dei", "fare il bagno"], correct: 2, tag: "Romans" },
+  { q: "Come si dice 'tempio' in inglese (vocabolario Romans)?", options: ["tower", "temple", "forum", "market"], correct: 1, tag: "Romans" },
   { q: "Cos'era il forum nelle città romane?", options: ["una sala da bagno", "il mercato e luogo d'incontro", "un tempio", "un anfiteatro"], correct: 1, tag: "Romans" },
   { q: "What does 'AD' stand for in dates like AD 122?", options: ["After Death", "Anno Domini", "Ancient Days", "All Date"], correct: 1, tag: "Romans" },
   { q: "Perché i Romani costruivano le fortezze (fortresses) attorno alle città?", options: ["per decorazione", "per attirare turisti", "per protezione", "per conservare l'acqua"], correct: 2, tag: "Romans" },
-  { q: "In un anfiteatro (amphitheatre) romano si poteva...", options: ["pregare", "guardare i gladiatori", "comprare cibo", "fare il bagno"], correct: 1, tag: "Romans" },
+  { q: "In quale città inglese c'è un Roman Amphitheatre famoso?", options: ["Bath", "Chester", "York", "Lancaster"], correct: 1, tag: "Romans" },
   { q: "Come si dice 'mercato' in inglese (vocabolario Romans)?", options: ["forum", "tower", "market", "street"], correct: 2, tag: "Romans" },
-  { q: "Which river runs through London, also in Roman times?", options: ["The Severn", "The Walbrook", "The Thames", "The Avon"], correct: 2, tag: "Romans" },
+  { q: "Su quale fiume i Romani fondarono Londinium nel 43 AD?", options: ["The Po", "The Tiber", "The Thames", "The Nile"], correct: 2, tag: "Romans" },
 
   // Baths (2)
   { q: "Quando arrivi alle terme romane, dove vai per PRIMA cosa?", options: ["The cold room", "The changing rooms", "The warm room", "The hot room"], correct: 1, tag: "Baths" },
-  { q: "Nella sala calda (hot room) delle terme, le persone...", options: ["nuotano", "sudano molto", "dormono", "mangiano"], correct: 1, tag: "Baths" },
+  { q: "Nella hot room delle terme, cosa dicono i bambini perché fa caldissimo?", options: ["\"I'm cold!\"", "\"I'm sleepy!\"", "\"It's so hot!\"", "\"I'm hungry!\""], correct: 2, tag: "Baths" },
 
   // Directions (3)
   { q: "In the dialogue 'The library is ___ the bank', which word fits?", options: ["between", "opposite", "behind", "under"], correct: 1, tag: "Directions" },
   { q: "Which traffic feature has cars going in a circle?", options: ["Traffic lights", "Crossroads", "Roundabout", "Pavement"], correct: 2, tag: "Directions" },
-  { q: "If you are cycling, what should you wear on your head?", options: ["A hat", "A scarf", "A helmet", "Sunglasses"], correct: 2, tag: "Directions" },
+  { q: "Per la sicurezza in bicicletta servono...", options: ["a phone and a map", "a helmet, a bell, a light", "a hat and a scarf", "a backpack only"], correct: 1, tag: "Directions" },
 
   // Imperatives (2)
   { q: "What's the imperative form for a 'no parking' sign?", options: ["Don't stop", "Don't park", "Don't turn", "Don't go"], correct: 1, tag: "Imperatives" },
@@ -182,10 +182,10 @@ const FILL_GAP = [
   { sentence: "___ past the chemist's and turn left.", choices: ["Go", "Goes", "Going"], correct: 0, topic: "Directions" },
   { sentence: "At the traffic lights, ___ straight on.", choices: ["go", "going", "goes"], correct: 0, topic: "Directions" },
   { sentence: "In ___ 43 the Emperor Claudius came to Britain.", choices: ["BC", "AD", "AC"], correct: 1, topic: "Romans" },
-  { sentence: "The Romans came to Britain to ___ many towns.", choices: ["destroy", "build", "buy"], correct: 1, topic: "Romans" },
-  { sentence: "In the hot room of the baths, people ___ a lot.", choices: ["swim", "sweat", "sleep"], correct: 1, topic: "Baths" },
+  { sentence: "The Romans started to build roads, fortresses and ___ baths.", choices: ["cold", "thermal", "hot"], correct: 1, topic: "Romans" },
+  { sentence: "In the cold room of the baths, the water is so ___.", choices: ["hot", "cold", "warm"], correct: 1, topic: "Baths" },
   { sentence: "___ open the door, please!", choices: ["Don't", "No", "Not"], correct: 0, topic: "Imperatives" },
-  { sentence: "Walk on the ___, not on the road.", choices: ["pavement", "roundabout", "crossroads"], correct: 0, topic: "Directions" }
+  { sentence: "How can I ___ to the chemist's, please?", choices: ["go", "get", "do"], correct: 1, topic: "Directions" }
 ];
 
 // MATCHING: pool da cui peschiamo 6 coppie random
