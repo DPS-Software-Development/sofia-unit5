@@ -265,8 +265,91 @@ button {
 .tile.quiz { border-color: #ec4899; }
 .tile.matching { border-color: #0ea5e9; }
 .tile.fill { border-color: #f59e0b; }
+.tile.tf { border-color: #14b8a6; }
+.tile.seq { border-color: #f97316; }
 .tile.errors { border-color: #ef4444; }
 .tile.report { border-color: #10b981; }
+
+/* ============ TRUE / FALSE ============ */
+.tf-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 12px;
+}
+.tf-btn {
+  min-height: 86px;
+  border: 3px solid #14b8a6;
+  border-radius: 18px;
+  background: white;
+  color: #0f766e;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.12s ease, background 0.2s ease;
+  padding: 8px;
+}
+.tf-btn.tf-false { border-color: #ef4444; color: #b91c1c; }
+.tf-btn:active { transform: scale(0.97); }
+.tf-btn.disabled { pointer-events: none; }
+.tf-btn.correct { background: #d1fae5; color: #065f46; border-color: #10b981; }
+.tf-btn.wrong { background: #fee2e2; color: #991b1b; border-color: #ef4444; }
+
+/* ============ SEQUENCE (Riordina) ============ */
+.seq-picked {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+.seq-slot {
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+}
+.seq-slot.empty {
+  background: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  color: #9ca3af;
+}
+.seq-slot.filled {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  border: 2px solid #f97316;
+  color: #9a3412;
+}
+.seq-pool {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.seq-item {
+  min-height: 52px;
+  background: white;
+  border: 2px solid #f97316;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  text-align: left;
+  transition: transform 0.12s ease;
+}
+.seq-item:active { transform: scale(0.97); }
+.seq-item:disabled, .seq-item[disabled] { opacity: 0.35; pointer-events: none; }
+.seq-item.wrong { background: #fee2e2; border-color: #ef4444; animation: shake 0.4s ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
 
 .funfact {
   background: var(--card);

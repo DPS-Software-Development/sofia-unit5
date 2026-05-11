@@ -3,7 +3,7 @@
 // Multi-utente: ogni nome ha le sue stats/stelle isolate (localStorage namespaceato)
 
 const app = document.getElementById('app');
-const APP_VERSION = 'v14';
+const APP_VERSION = 'v15';
 
 // ===== Multi-user =====
 function sanitizeName(s) {
@@ -47,14 +47,15 @@ function starsKey() {
 function loadStats() {
   try {
     const raw = localStorage.getItem(statsKey());
-    if (!raw) return { attempts: [], v: 4 };
+    if (!raw) return { attempts: [], v: 5 };
     const parsed = JSON.parse(raw);
-    if (!parsed || !Array.isArray(parsed.attempts)) return { attempts: [], v: 4 };
+    if (!parsed || !Array.isArray(parsed.attempts)) return { attempts: [], v: 5 };
     // Bump v:3 → v:4 invalida vecchie attempts: indici QUIZ/FILL_GAP cambiati post fact-check rigoroso v8
-    if (parsed.v !== 4) return { attempts: [], v: 4 };
+    // Bump v:4 → v:5 invalida vecchie attempts: pool quiz/fill rifatto da zero + nuovi tipi tf/seq
+    if (parsed.v !== 5) return { attempts: [], v: 5 };
     return parsed;
   } catch {
-    return { attempts: [], v: 4 };
+    return { attempts: [], v: 5 };
   }
 }
 
@@ -96,7 +97,7 @@ function logAttempt(type, id, topic, correct) {
 }
 
 function resetStats() {
-  state.stats = { attempts: [], v: 4 };
+  state.stats = { attempts: [], v: 5 };
   saveStats();
 }
 
@@ -146,7 +147,9 @@ function isMasteredItem(type, id) {
 function getErrorItems() {
   return {
     quiz: QUIZ.map((q, i) => ({ ...q, _idx: i })).filter(q => isErrorItem('quiz', q._idx)),
-    fill: FILL_GAP.map((f, i) => ({ ...f, _idx: i })).filter(f => isErrorItem('fill', f._idx))
+    fill: FILL_GAP.map((f, i) => ({ ...f, _idx: i })).filter(f => isErrorItem('fill', f._idx)),
+    tf: (typeof TRUE_FALSE !== 'undefined' ? TRUE_FALSE : []).map((t, i) => ({ ...t, _idx: i })).filter(t => isErrorItem('tf', t._idx)),
+    seq: (typeof SEQUENCE !== 'undefined' ? SEQUENCE : []).map((s, i) => ({ ...s, _idx: i })).filter(s => isErrorItem('seq', s._idx))
   };
 }
 
@@ -271,7 +274,7 @@ function renderHome() {
   cancelPending();
   if (!getCurrentUser()) { renderWelcome(); return; }
   const errors = getErrorItems();
-  const totErrors = errors.quiz.length + errors.fill.length;
+  const totErrors = errors.quiz.length + errors.fill.length + errors.tf.length + errors.seq.length;
   const totAttempts = state.stats.attempts.length;
   const name = state.userName;
 
@@ -295,15 +298,25 @@ function renderHome() {
         <div class="label">Quiz</div>
         <div class="desc">10 domande adaptive</div>
       </div>
-      <div class="tile matching" data-go="matching">
-        <div class="emoji">🧩</div>
-        <div class="label">Matching</div>
-        <div class="desc">abbina le coppie</div>
-      </div>
       <div class="tile fill" data-go="fillgap">
         <div class="emoji">✍️</div>
         <div class="label">Fill the gap</div>
         <div class="desc">completa la frase</div>
+      </div>
+      <div class="tile tf" data-go="truefalse">
+        <div class="emoji">✅❌</div>
+        <div class="label">Vero/Falso</div>
+        <div class="desc">10 affermazioni</div>
+      </div>
+      <div class="tile seq" data-go="sequence">
+        <div class="emoji">🔢</div>
+        <div class="label">Riordina</div>
+        <div class="desc">metti in ordine</div>
+      </div>
+      <div class="tile matching" data-go="matching">
+        <div class="emoji">🧩</div>
+        <div class="label">Matching</div>
+        <div class="desc">abbina le coppie</div>
       </div>
       <div class="tile errors" data-go="ripasso">
         <div class="emoji">🔁</div>
@@ -329,6 +342,8 @@ function renderHome() {
       else if (go === 'quiz') renderQuiz();
       else if (go === 'matching') renderMatching();
       else if (go === 'fillgap') renderFillGap();
+      else if (go === 'truefalse') renderTrueFalse();
+      else if (go === 'sequence') renderSequence();
       else if (go === 'ripasso') renderRipasso();
       else if (go === 'report') renderReport();
     };
@@ -617,6 +632,217 @@ function renderMatchingEnd() {
   document.getElementById('home').onclick = renderHome;
 }
 
+// ===== Screen: True/False =====
+const tfState = { items: [], idx: 0, score: 0, locked: false, mode: 'adaptive' };
+
+function renderTrueFalse(mode = 'adaptive', sourceItems = null) {
+  cancelPending();
+  tfState.mode = mode;
+  if (sourceItems) {
+    tfState.items = shuffle(sourceItems);
+  } else {
+    tfState.items = adaptivePick(TRUE_FALSE, Math.min(10, TRUE_FALSE.length), 'tag');
+  }
+  tfState.idx = 0;
+  tfState.score = 0;
+  tfState.locked = false;
+  showTrueFalse();
+}
+
+function showTrueFalse() {
+  const total = tfState.items.length;
+  if (tfState.idx >= total || total === 0) return renderTrueFalseEnd();
+  const q = tfState.items[tfState.idx];
+  const pct = (tfState.idx / total) * 100;
+  const weakBadge = getWeakTopics().includes(q.tag) ? '<span class="weak-badge">🎯 topic da rafforzare</span>' : '';
+
+  app.innerHTML = `
+    <div class="header">
+      <button class="back-btn" id="back" aria-label="Torna alla home">←</button>
+      <div>
+        <h1>✅❌ Vero o Falso ${tfState.mode === 'errors' ? '· 🔁' : ''}</h1>
+        <div class="sub">Affermazione ${tfState.idx + 1} di ${total} — score: ${tfState.score}</div>
+      </div>
+    </div>
+    <div class="progress-bar"><div style="width:${pct}%"></div></div>
+    <div class="question-card">
+      <button class="speak-btn-sm" id="speakq" aria-label="Ascolta in inglese">🔊</button>
+      <div class="tag">${escape(q.tag)} ${weakBadge}</div>
+      <div class="q">${escape(q.s)}</div>
+    </div>
+    <div class="tf-options">
+      <button class="tf-btn tf-true" data-v="true">✅ VERO</button>
+      <button class="tf-btn tf-false" data-v="false">❌ FALSO</button>
+    </div>
+  `;
+  document.getElementById('back').onclick = renderHome;
+  document.getElementById('speakq').onclick = () => speak(q.s);
+  document.querySelectorAll('.tf-btn').forEach(btn => {
+    btn.onclick = () => {
+      if (tfState.locked) return;
+      tfState.locked = true;
+      const choice = btn.dataset.v === 'true';
+      const ok = choice === q.correct;
+      logAttempt('tf', q._idx, q.tag, ok);
+      document.querySelectorAll('.tf-btn').forEach(b => {
+        b.classList.add('disabled');
+        const isCorrectBtn = (b.dataset.v === 'true') === q.correct;
+        if (isCorrectBtn) b.classList.add('correct');
+        else if (b === btn && !ok) b.classList.add('wrong');
+      });
+      if (ok) tfState.score++;
+      scheduleNext(() => {
+        tfState.idx++;
+        tfState.locked = false;
+        showTrueFalse();
+      }, 1300);
+    };
+  });
+}
+
+function renderTrueFalseEnd() {
+  const total = tfState.items.length;
+  if (total === 0) {
+    app.innerHTML = `<div class="end-screen"><div class="big-emoji">🎉</div><h2>Nessun errore!</h2><div class="actions"><button class="btn full" id="home">Home</button></div></div>`;
+    document.getElementById('home').onclick = renderHome;
+    return;
+  }
+  const pct = (tfState.score / total) * 100;
+  let stars = 1;
+  if (pct >= 60) stars = 2;
+  if (pct >= 80) stars = 3;
+  saveStars(stars);
+  const emoji = pct >= 80 ? '🏆' : pct >= 60 ? '🎉' : '💪';
+  const msg = pct >= 80 ? 'Fantastica!' : pct >= 60 ? 'Bel lavoro!' : 'Continua così!';
+  app.innerHTML = `
+    <div class="end-screen">
+      <div class="big-emoji">${emoji}</div>
+      <h2>${msg}</h2>
+      <div class="score">${tfState.score} / ${total}</div>
+      <div class="stars-result">${'⭐'.repeat(stars)}</div>
+      <div class="actions">
+        <button class="btn full" id="again">Rigioca</button>
+        <button class="btn secondary full" id="home">Home</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('again').onclick = () => renderTrueFalse('adaptive');
+  document.getElementById('home').onclick = renderHome;
+}
+
+// ===== Screen: Sequence (riordina) =====
+const seqState = { items: [], idx: 0, score: 0, picked: [], pool: [], locked: false };
+
+function renderSequence(mode = 'adaptive', sourceItems = null) {
+  cancelPending();
+  if (sourceItems) {
+    seqState.items = shuffle(sourceItems);
+  } else {
+    seqState.items = adaptivePick(SEQUENCE, Math.min(6, SEQUENCE.length), 'tag');
+  }
+  seqState.idx = 0;
+  seqState.score = 0;
+  seqState.locked = false;
+  showSequence();
+}
+
+function showSequence() {
+  const total = seqState.items.length;
+  if (seqState.idx >= total || total === 0) return renderSequenceEnd();
+  const item = seqState.items[seqState.idx];
+  // items[] è l'ordine corretto; pool è la versione mescolata
+  seqState.pool = shuffle(item.items.map((label, i) => ({label, order: i})));
+  seqState.picked = [];
+  seqState.locked = false;
+  drawSequence(item);
+}
+
+function drawSequence(item) {
+  const total = seqState.items.length;
+  const pct = (seqState.idx / total) * 100;
+  const weakBadge = getWeakTopics().includes(item.tag) ? '<span class="weak-badge">🎯 topic da rafforzare</span>' : '';
+  app.innerHTML = `
+    <div class="header">
+      <button class="back-btn" id="back" aria-label="Torna alla home">←</button>
+      <div>
+        <h1>🔢 Riordina</h1>
+        <div class="sub">Sequenza ${seqState.idx + 1} di ${total} — score: ${seqState.score}</div>
+      </div>
+    </div>
+    <div class="progress-bar"><div style="width:${pct}%"></div></div>
+    <div class="question-card">
+      <div class="tag">${escape(item.tag)} ${weakBadge}</div>
+      <div class="q">${escape(item.prompt)}</div>
+    </div>
+    <div class="seq-picked" id="seqPicked">
+      ${seqState.picked.map((p, i) => `<div class="seq-slot filled">${i+1}. ${escape(p.label)}</div>`).join('')}
+      ${Array.from({length: item.items.length - seqState.picked.length}).map((_, i) => `<div class="seq-slot empty">${seqState.picked.length + i + 1}.</div>`).join('')}
+    </div>
+    <div class="seq-pool" id="seqPool">
+      ${seqState.pool.map(p => `<button class="seq-item" data-order="${p.order}" ${seqState.picked.find(x=>x.order===p.order)?'disabled':''}>${escape(p.label)}</button>`).join('')}
+    </div>
+  `;
+  document.getElementById('back').onclick = renderHome;
+  document.querySelectorAll('.seq-item').forEach(btn => {
+    btn.onclick = () => {
+      if (seqState.locked) return;
+      const order = parseInt(btn.dataset.order, 10);
+      const expected = seqState.picked.length;
+      const ok = order === expected;
+      if (!ok) {
+        // sbagliato: shake + reset
+        seqState.locked = true;
+        btn.classList.add('wrong');
+        setTimeout(() => { btn.classList.remove('wrong'); seqState.picked = []; seqState.locked = false; drawSequence(item); }, 700);
+        return;
+      }
+      seqState.picked.push({label: btn.textContent.trim(), order});
+      if (seqState.picked.length === item.items.length) {
+        // Sequence completata correttamente
+        logAttempt('seq', item._idx, item.tag, true);
+        seqState.score++;
+        seqState.locked = true;
+        scheduleNext(() => {
+          seqState.idx++;
+          seqState.locked = false;
+          showSequence();
+        }, 900);
+      } else {
+        drawSequence(item);
+      }
+    };
+  });
+}
+
+function renderSequenceEnd() {
+  const total = seqState.items.length;
+  if (total === 0) {
+    app.innerHTML = `<div class="end-screen"><div class="big-emoji">🎉</div><h2>Tutto perfetto!</h2><div class="actions"><button class="btn full" id="home">Home</button></div></div>`;
+    document.getElementById('home').onclick = renderHome;
+    return;
+  }
+  const pct = (seqState.score / total) * 100;
+  let stars = 1;
+  if (pct >= 60) stars = 2;
+  if (pct >= 80) stars = 3;
+  saveStars(stars);
+  const emoji = pct >= 80 ? '🏆' : pct >= 60 ? '🎉' : '💪';
+  app.innerHTML = `
+    <div class="end-screen">
+      <div class="big-emoji">${emoji}</div>
+      <h2>${pct >= 80 ? 'Fantastica!' : 'Bel lavoro!'}</h2>
+      <div class="score">${seqState.score} / ${total}</div>
+      <div class="stars-result">${'⭐'.repeat(stars)}</div>
+      <div class="actions">
+        <button class="btn full" id="again">Rigioca</button>
+        <button class="btn secondary full" id="home">Home</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('again').onclick = () => renderSequence('adaptive');
+  document.getElementById('home').onclick = renderHome;
+}
+
 // ===== Screen: Fill the Gap =====
 const fillState = { items: [], idx: 0, picked: null, score: 0, locked: false, mode: 'adaptive' };
 
@@ -740,7 +966,7 @@ function renderFillEnd() {
 function renderRipasso() {
   cancelPending();
   const err = getErrorItems();
-  const total = err.quiz.length + err.fill.length;
+  const total = err.quiz.length + err.fill.length + err.tf.length + err.seq.length;
   app.innerHTML = `
     <div class="header">
       <button class="back-btn" id="back" aria-label="Torna alla home">←</button>
@@ -755,7 +981,7 @@ function renderRipasso() {
         <p>
           ${total === 0
             ? 'Nessun errore in sospeso. Sei pronta per la verifica!'
-            : `Hai <strong>${total} cose</strong> da rivedere: <strong>${err.quiz.length}</strong> nel quiz, <strong>${err.fill.length}</strong> nelle frasi. Quando rispondi giusto 2 volte di fila a un esercizio, esce dalla lista.`}
+            : `Hai <strong>${total} cose</strong> da rivedere: <strong>${err.quiz.length}</strong> quiz, <strong>${err.fill.length}</strong> frasi, <strong>${err.tf.length}</strong> vero/falso, <strong>${err.seq.length}</strong> sequenze. Quando rispondi giusto 2 volte di fila esce dalla lista.`}
         </p>
       </div>
       <div class="ripasso-actions">
@@ -765,12 +991,20 @@ function renderRipasso() {
         <button class="btn full" id="gofill" ${err.fill.length === 0 ? 'disabled' : ''}>
           ✍️ Ripassa ${err.fill.length} frasi
         </button>
+        <button class="btn full" id="gotf" ${err.tf.length === 0 ? 'disabled' : ''}>
+          ✅❌ Ripassa ${err.tf.length} vero/falso
+        </button>
+        <button class="btn full" id="goseq" ${err.seq.length === 0 ? 'disabled' : ''}>
+          🔢 Ripassa ${err.seq.length} sequenze
+        </button>
       </div>
     </div>
   `;
   document.getElementById('back').onclick = renderHome;
   document.getElementById('goquiz').onclick = () => { if (err.quiz.length) renderQuiz('errors', err.quiz); };
   document.getElementById('gofill').onclick = () => { if (err.fill.length) renderFillGap('errors', err.fill); };
+  document.getElementById('gotf').onclick = () => { if (err.tf.length) renderTrueFalse('errors', err.tf); };
+  document.getElementById('goseq').onclick = () => { if (err.seq.length) renderSequence('errors', err.seq); };
 }
 
 // ===== Screen: Report =====
@@ -791,10 +1025,12 @@ function renderReport() {
     `<li><strong>${escape(f.topic)}</strong>: "${escape(f.sentence)}" <em>→ ${escape(f.choices[f.correct])}</em></li>`
   ).join('') || '<li class="empty">nessun errore fill</li>';
 
-  // Padroneggiate (mastered)
+  // Padroneggiate (mastered) - tutti i tipi
   const masteredQuiz = QUIZ.map((q, i) => ({ ...q, _idx: i })).filter(q => isMasteredItem('quiz', q._idx));
   const masteredFill = FILL_GAP.map((f, i) => ({ ...f, _idx: i })).filter(f => isMasteredItem('fill', f._idx));
-  const masteredCount = masteredQuiz.length + masteredFill.length;
+  const masteredTF = (typeof TRUE_FALSE !== 'undefined' ? TRUE_FALSE : []).map((t, i) => ({ ...t, _idx: i })).filter(t => isMasteredItem('tf', t._idx));
+  const masteredSeq = (typeof SEQUENCE !== 'undefined' ? SEQUENCE : []).map((s, i) => ({ ...s, _idx: i })).filter(s => isMasteredItem('seq', s._idx));
+  const masteredCount = masteredQuiz.length + masteredFill.length + masteredTF.length + masteredSeq.length;
 
   // Topic bars
   const bars = TOPIC_KEYS.map(t => {
