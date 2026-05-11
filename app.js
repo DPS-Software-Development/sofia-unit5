@@ -1,16 +1,54 @@
 // Sofia's English Adventure - Unit 5
 // Con tracking errori, adaptive review, ripassa errori, report dashboard, audio TTS
+// Multi-utente: ogni nome ha le sue stats/stelle isolate (localStorage namespaceato)
 
 const app = document.getElementById('app');
+
+// ===== Multi-user =====
+function sanitizeName(s) {
+  return String(s || '').trim().replace(/\s+/g, ' ').slice(0, 24);
+}
+function getCurrentUser() {
+  return sanitizeName(localStorage.getItem('sofia_u5_current_user') || '');
+}
+function setCurrentUser(name) {
+  const clean = sanitizeName(name);
+  if (!clean) return false;
+  localStorage.setItem('sofia_u5_current_user', clean);
+  const list = getUserList();
+  if (!list.includes(clean)) {
+    list.push(clean);
+    localStorage.setItem('sofia_u5_users', JSON.stringify(list));
+  }
+  return true;
+}
+function getUserList() {
+  try {
+    const raw = localStorage.getItem('sofia_u5_users');
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.map(sanitizeName).filter(Boolean) : [];
+  } catch { return []; }
+}
+function userSlug(name) {
+  return encodeURIComponent(sanitizeName(name)).replace(/%/g, '_');
+}
+function statsKey() {
+  const u = getCurrentUser();
+  return u ? `sofia_u5_stats__${userSlug(u)}` : 'sofia_u5_stats';
+}
+function starsKey() {
+  const u = getCurrentUser();
+  return u ? `sofia_u5_stars__${userSlug(u)}` : 'sofia_u5_stars';
+}
 
 // ===== State =====
 function loadStats() {
   try {
-    const raw = localStorage.getItem('sofia_u5_stats');
+    const raw = localStorage.getItem(statsKey());
     if (!raw) return { attempts: [], v: 3 };
     const parsed = JSON.parse(raw);
     if (!parsed || !Array.isArray(parsed.attempts)) return { attempts: [], v: 3 };
-    // Bump v: 2 → v: 3 invalida vecchie attempts: indici QUIZ/FILL_GAP cambiati post fact-check
     if (parsed.v !== 3) return { attempts: [], v: 3 };
     return parsed;
   } catch {
@@ -28,20 +66,26 @@ function cancelPending() {
 }
 
 const state = {
-  stars: parseInt(localStorage.getItem('sofia_u5_stars') || '0', 10),
+  userName: getCurrentUser(),
+  stars: parseInt(localStorage.getItem(starsKey()) || '0', 10),
   stats: loadStats(),
   funFact: FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)],
 };
 
+function reloadUserState() {
+  state.userName = getCurrentUser();
+  state.stars = parseInt(localStorage.getItem(starsKey()) || '0', 10);
+  state.stats = loadStats();
+}
+
 function saveStars(delta) {
   state.stars += delta;
-  localStorage.setItem('sofia_u5_stars', String(state.stars));
+  localStorage.setItem(starsKey(), String(state.stars));
 }
 
 function saveStats() {
-  // Keep last 500 attempts to bound storage
   if (state.stats.attempts.length > 500) state.stats.attempts = state.stats.attempts.slice(-500);
-  localStorage.setItem('sofia_u5_stats', JSON.stringify(state.stats));
+  localStorage.setItem(statsKey(), JSON.stringify(state.stats));
 }
 
 function logAttempt(type, id, topic, correct) {
@@ -161,16 +205,79 @@ function escape(s) {
   })[c]);
 }
 
+// ===== Screen: Welcome (multi-user) =====
+function renderWelcome() {
+  cancelPending();
+  const others = getUserList().filter(n => n !== getCurrentUser());
+  const recentChips = others.length > 0
+    ? `<div class="welcome-recent">
+        <div class="welcome-recent-label">Sei già stato qui?</div>
+        <div class="welcome-recent-list">
+          ${others.map(n => `<button class="user-chip" data-name="${escape(n)}">👤 ${escape(n)}</button>`).join('')}
+        </div>
+      </div>`
+    : '';
+
+  app.innerHTML = `
+    <div class="welcome">
+      <div class="welcome-emoji">🇬🇧</div>
+      <h1>English Adventure</h1>
+      <p class="welcome-sub">Unit 5 — Bath, here we come!</p>
+      <div class="welcome-card">
+        <label for="userInput" class="welcome-label">Come ti chiami?</label>
+        <input id="userInput" type="text" inputmode="text" autocomplete="off" autocapitalize="words"
+               maxlength="24" placeholder="Scrivi il tuo nome" />
+        <button class="welcome-go" id="welcomeGo">Inizia ▶</button>
+        ${recentChips}
+      </div>
+      <div class="welcome-foot">I tuoi progressi (stelle, errori, statistiche) restano <strong>solo per te</strong> su questo dispositivo.</div>
+    </div>
+  `;
+
+  const input = document.getElementById('userInput');
+  const go = document.getElementById('welcomeGo');
+  const submit = () => {
+    const name = input.value;
+    if (!sanitizeName(name)) { input.focus(); toast('Scrivi un nome 😊'); return; }
+    setCurrentUser(name);
+    reloadUserState();
+    renderHome();
+  };
+  go.onclick = submit;
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+  document.querySelectorAll('.user-chip').forEach(b => {
+    b.onclick = () => {
+      setCurrentUser(b.dataset.name);
+      reloadUserState();
+      renderHome();
+    };
+  });
+  setTimeout(() => input.focus(), 50);
+}
+
+function switchUser() {
+  cancelPending();
+  // Mantieni l'utente corrente in lista, ma forza la welcome screen
+  localStorage.removeItem('sofia_u5_current_user');
+  reloadUserState();
+  renderWelcome();
+}
+
 // ===== Screen: Home =====
 function renderHome() {
   cancelPending();
+  if (!getCurrentUser()) { renderWelcome(); return; }
   const errors = getErrorItems();
   const totErrors = errors.quiz.length + errors.fill.length;
   const totAttempts = state.stats.attempts.length;
+  const name = state.userName;
 
   app.innerHTML = `
     <div class="hero">
-      <h1>Hi Sofia! 👋</h1>
+      <div class="user-row">
+        <div class="user-greet">Hi <strong>${escape(name)}</strong>! 👋</div>
+        <button class="user-switch" id="userSwitch" aria-label="Cambia utente">👤 Cambia</button>
+      </div>
       <p>Unit 5 — Bath, here we come!</p>
       <div class="stars">⭐ ${state.stars} stelle · 📝 ${totAttempts} risposte</div>
     </div>
@@ -222,6 +329,8 @@ function renderHome() {
       else if (go === 'report') renderReport();
     };
   });
+  const sw = document.getElementById('userSwitch');
+  if (sw) sw.onclick = switchUser;
 }
 
 // ===== Screen: Flashcards =====
@@ -784,4 +893,4 @@ if ('serviceWorker' in navigator) {
 }
 
 // ===== Boot =====
-renderHome();
+if (getCurrentUser()) renderHome(); else renderWelcome();
